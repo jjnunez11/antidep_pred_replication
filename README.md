@@ -21,6 +21,8 @@ We may update the NDA collection with them when possible.
 
 The results used in our paper are located within zips for each table in the [results folder](./results)
 
+The exact models objects used to obtain our results, compressed via Python's pickle protocol, are obtain in this [OneDrive folder](https://onedrive.live.com/embed?cid=3270DE108C079AD9&resid=3270DE108C079AD9%2113381&authkey=AGH3p3NQb5bCa9w) due to space constraints of Github. 
+
 ## Data Processing
 
 Please find our data cleaning and processing code in [data-cleaning](./code/data-cleaning/)
@@ -37,3 +39,11 @@ The raw STAR*D and CAN-BIND data should be placed in separate folders within [da
 2. Place your .csv files with the X and y matrices you want to run (or ours as downloaded) into the data directory above
 3. Run the machine learning with [run_results](./code/run_results.py) script. This script calls [run_result](./code/run_results.py), assuming the filename of the 
 dataset csv's will be passed along, minus the '.csv' ending. 
+
+### Code Versions
+The project's code was last completely ran in October, 2020. The following versions were used:
+Python 3.6.10
+scikit-learn 0.23.1
+pandas 1.0.5
+numpy 1.17.0
+scipy 1.5.0
