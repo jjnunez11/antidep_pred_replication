@@ -825,11 +825,6 @@ def generate_y(root_data_dir_path):
     output_y_dir_path = output_dir_path + "/" + DIR_Y_MATRIX + "/"
 
     print("\n--------------------------------7. Y MATRIX GENERATION-----------------------------------\n")
-
-    #y_lvl2_rem_qids_c = pd.DataFrame()
-    #y_lvl2_rem_qids_sr = pd.DataFrame()
-    #y_wk8_resp_qids_c = pd.DataFrame()
-    #y_wk8_resp_qids_sr = pd.DataFrame()
     y_wk8_rem_qids_c = pd.DataFrame()
     y_wk8_rem_qids_sr = pd.DataFrame()
 
@@ -971,9 +966,9 @@ def generate_y(root_data_dir_path):
                     # QIDS-SR Remission
                     if subset_sr.shape[0] != 0:
                         end_score_sr = subset_sr.sort_values(by=['days_baseline'], ascending=False).iloc[0]['qstot']
-                        if end_score_sr <= 5:
+                        if 5 >= end_score_sr >= 0:
                             y_wk8_rem_qids_sr.loc[i, "target"] = 1
-                        elif (end_score_sr >= 0) and (end_score_sr < 5):
+                        elif end_score_sr > 5:
                             y_wk8_rem_qids_sr.loc[i, "target"] = 0
 
                     # If there are no qids tot values, leave blank
@@ -1019,21 +1014,16 @@ def select_subjects(root_data_dir_path):
 
     ### Handle the TRD stuff
     
-    y_lvl2_rem_qids_c = pd.read_csv(input_y_generation_dir_path + "/y_lvl2_rem_qids_c" + CSV_SUFFIX)
-    y_lvl2_rem_qids_sr = pd.read_csv(input_y_generation_dir_path + "/y_lvl2_rem_qids_sr" + CSV_SUFFIX)
+    y_nolvl1drop_trdrem_qids01_c = pd.read_csv(input_y_generation_dir_path + "/y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX)
+    y_nolvl1drop_trdrem_qids01_sr = pd.read_csv(input_y_generation_dir_path + "/y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX)
 
-    y_lvl2_rem_qids_tillwk4_c = pd.read_csv(input_y_generation_dir_path + "/y_lvl2_rem_qids_tillwk4_c" + CSV_SUFFIX)
-    
-    X_nolvl1drop_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_c, y_lvl2_rem_qids_c, 'c')
-    X_nolvl1drop_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_sr, y_lvl2_rem_qids_sr, 'sr')
-
-
+    X_nolvl1drop_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_c, y_nolvl1drop_trdrem_qids01_c, 'c')
+    X_nolvl1drop_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_sr, y_nolvl1drop_trdrem_qids01_sr, 'sr')
 
     # Subset the y matrices so that it matches the X matrices
-    y_lvl2_rem_qids_c__final = y_lvl2_rem_qids_c[y_lvl2_rem_qids_c.subjectkey.isin(X_nolvl1drop_qids_c__final.subjectkey)]
-    y_lvl2_rem_qids_sr__final = y_lvl2_rem_qids_sr[y_lvl2_rem_qids_sr.subjectkey.isin(X_nolvl1drop_qids_sr__final.subjectkey)]
-    
-    
+    y_nolvl1drop_trdrem_qids01_c__final = y_nolvl1drop_trdrem_qids01_c[y_nolvl1drop_trdrem_qids01_c.subjectkey.isin(X_nolvl1drop_qids_c__final.subjectkey)]
+    y_nolvl1drop_trdrem_qids01_sr__final = y_nolvl1drop_trdrem_qids01_sr[y_nolvl1drop_trdrem_qids01_sr.subjectkey.isin(X_nolvl1drop_qids_sr__final.subjectkey)]
+
     # Handle the week8 response stuff
     y_wk8_resp_qids_c = pd.read_csv(input_y_generation_dir_path + "/y_wk8_resp_qids_c" + CSV_SUFFIX)
     y_wk8_resp_qids_sr = pd.read_csv(input_y_generation_dir_path + "/y_wk8_resp_qids_sr" + CSV_SUFFIX)
@@ -1055,24 +1045,19 @@ def select_subjects(root_data_dir_path):
     y_wk8_rem_qids_c__final = y_wk8_rem_qids_c[y_wk8_rem_qids_c.subjectkey.isin(X_tillwk4_qids_c__final.subjectkey)]
     y_wk8_rem_qids_sr__final = y_wk8_rem_qids_sr[y_wk8_rem_qids_sr.subjectkey.isin(X_tillwk4_qids_sr__final.subjectkey)]
 
-    # Also do a form of the lvl 2 remission (TRD) to match the week 4 inclusion criteria
-    y_lvl2_rem_qids_c_tillwk4__final = y_lvl2_rem_qids_tillwk4_c[y_lvl2_rem_qids_tillwk4_c.subjectkey.isin(X_tillwk4_qids_c__final.subjectkey)]
-
     # Sort both X and y matrices by 'subject' to make sure they match; y should already be sorted by this
     X_nolvl1drop_qids_c__final = X_nolvl1drop_qids_c__final.sort_values(by=['subjectkey'])
     X_nolvl1drop_qids_sr__final = X_nolvl1drop_qids_sr__final.sort_values(by=['subjectkey'])
     X_tillwk4_qids_c__final = X_tillwk4_qids_c__final.sort_values(by=['subjectkey'])
     X_tillwk4_qids_sr__final = X_tillwk4_qids_sr__final.sort_values(by=['subjectkey'])
     
-    y_lvl2_rem_qids_c__final = y_lvl2_rem_qids_c__final.sort_values(by=['subjectkey'])
-    y_lvl2_rem_qids_sr__final = y_lvl2_rem_qids_sr__final.sort_values(by=['subjectkey'])    
+    y_nolvl1drop_trdrem_qids01_c__final = y_nolvl1drop_trdrem_qids01_c__final.sort_values(by=['subjectkey'])
+    y_nolvl1drop_trdrem_qids01_sr__final = y_nolvl1drop_trdrem_qids01_sr__final.sort_values(by=['subjectkey'])
     y_wk8_resp_qids_c__final = y_wk8_resp_qids_c__final.sort_values(by=['subjectkey'])
     y_wk8_resp_qids_sr__final = y_wk8_resp_qids_sr__final.sort_values(by=['subjectkey'])
     y_wk8_rem_qids_c__final = y_wk8_rem_qids_c__final.sort_values(by=['subjectkey'])
     y_wk8_rem_qids_sr__final = y_wk8_rem_qids_sr__final.sort_values(by=['subjectkey'])
-    
-    y_lvl2_rem_qids_c_tillwk4__final = y_lvl2_rem_qids_c_tillwk4__final.sort_values(by=['subjectkey'])
-    
+
     # Make two new y matrices to evaluate performance if a different inclusion is used
     y_wk8_resp_qids_sr_nolvl1drop = y_wk8_resp_qids_sr__final[y_wk8_resp_qids_sr__final.subjectkey.isin(X_nolvl1drop_qids_sr__final.subjectkey)]
     y_wk8_resp_qids_c_nolvl1drop = y_wk8_resp_qids_c__final[y_wk8_resp_qids_c__final.subjectkey.isin(X_nolvl1drop_qids_c__final.subjectkey)]
@@ -1087,15 +1072,13 @@ def select_subjects(root_data_dir_path):
     X_tillwk4_qids_sr__final.to_csv(output_subject_selected_path + "X_tillwk4_qids_sr__final" + CSV_SUFFIX, index=False)
 
     # Output y matrices to CSV
-    y_lvl2_rem_qids_c__final.to_csv(output_subject_selected_path + "y_lvl2_rem_qids_c__final" + CSV_SUFFIX, index=False)
-    y_lvl2_rem_qids_sr__final.to_csv(output_subject_selected_path + "y_lvl2_rem_qids_sr__final" + CSV_SUFFIX, index=False)
+    y_nolvl1drop_trdrem_qids01_c__final.to_csv(output_subject_selected_path + "y_nolvl1drop_trdrem_qids01_c__final" + CSV_SUFFIX, index=False)
+    y_nolvl1drop_trdrem_qids01_sr__final.to_csv(output_subject_selected_path + "y_nolvl1drop_trdrem_qids01_sr__final" + CSV_SUFFIX, index=False)
     y_wk8_resp_qids_c__final.to_csv(output_subject_selected_path + "y_wk8_resp_qids_c__final" + CSV_SUFFIX, index=False)
     y_wk8_resp_qids_sr__final.to_csv(output_subject_selected_path + "y_wk8_resp_qids_sr__final" + CSV_SUFFIX, index=False)
     y_wk8_rem_qids_c__final.to_csv(output_subject_selected_path + "y_wk8_rem_qids_c__final" + CSV_SUFFIX, index=False)
     y_wk8_rem_qids_sr__final.to_csv(output_subject_selected_path + "y_wk8_rem_qids_sr__final" + CSV_SUFFIX, index=False)
 
-    y_lvl2_rem_qids_c_tillwk4__final.to_csv(output_subject_selected_path + "y_lvl2_rem_qids_c_tillwk4__final" + CSV_SUFFIX, index=False)
-    
     y_wk8_resp_qids_sr_nolvl1drop.to_csv(output_subject_selected_path + "y_wk8_resp_qids_sr_nolvl1drop" + CSV_SUFFIX, index=False)
     y_wk8_resp_qids_c_nolvl1drop.to_csv(output_subject_selected_path + "y_wk8_resp_qids_c_nolvl1drop" + CSV_SUFFIX, index=False)
     
