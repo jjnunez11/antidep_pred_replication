@@ -8,5 +8,5 @@ Created on Sun Oct 18 11:44:04 2020
 """
 
 # Directories for data and results
-DATA_DIR = r"C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\teyden-git\data\final_datasets\for_paper_20201012\\"
-RESULTS_DIR = r'F:\ml_paper_models'
+DATA_DIR = r"C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\teyden-git\data\final_datasets\\post_publish_at_20210826\\"
+RESULTS_DIR = r'F:\F_Drive_Backup\ml_paper_models\post_publish_at'

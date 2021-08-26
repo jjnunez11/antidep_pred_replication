@@ -857,9 +857,10 @@ def generate_y(root_data_dir_path):
             over21_df = scale_df.loc[scale_df['days_baseline'] > 21] # New, use this to check subjects remained 4 weeks. 
             
             for vers in ['c', 'sr']:
-                y_lvl2_rem_qids01 = pd.DataFrame()
+                # y_lvl2_rem_qids01 = pd.DataFrame()
                 y_wk8_resp_qids01 = pd.DataFrame()
-                y_lvl2_rem_qids01_tillwk4 = pd.DataFrame()
+                # y_lvl2_rem_qids01_tillwk4 = pd.DataFrame()
+                y_nolvl1drop_trdrem_qids01 = pd.DataFrame()
                 
                 if vers == 'c': 
                     version_form = 'Clinician'
@@ -871,21 +872,29 @@ def generate_y(root_data_dir_path):
                 i = 0
                 for id, group in scale_df.groupby(['subjectkey']):
                     if id in over21_df['subjectkey'].values: # Only generate y if this subject stayed in study for 4 weeks             
-                        y_lvl2_rem_qids01.loc[i, "subjectkey"] = id
-                        y_lvl2_rem_qids01_tillwk4.loc[i, "subjectkey"] = id # Second version that assigns TRD to dropouts, not used by Nie et al
-                        y_lvl2_rem_qids01_tillwk4.loc[i, "target"] = 1 # Default these all to TRD
-                        subset = group[(group['level'] == "Level 2") | (group['level'] == "Level 2.1")]
-                        # Assign 1 to all subjects who make it to Level 2 or 2.1. This will allow exclusion of patients who
-                        # do not remit in Level 1 and then drop out
-                        if subset.shape[0] > 0:
-                            y_lvl2_rem_qids01.loc[i, "target"] = 1
-                    
-                        # Assign 0 to all subjects who achieve QIDS-C remission in Levels 1,2,2.1
-                        subset_rems = group[(group['version_form'] == version_form) & (group['qstot'] <= 5) & ((group['level'] == "Level 1" ) | (group['level'] == "Level 2" ) | (group['level'] == "Level 2.1" ) )]
-                        if subset_rems.shape[0] > 0:
-                            y_lvl2_rem_qids01.loc[i, "target"] = 0
-                            y_lvl2_rem_qids01_tillwk4.loc[i, "target"] = 0
-    
+                        y_nolvl1drop_trdrem_qids01.loc[i,"subjectkey"] = id
+
+                        # Make subset of entries for this subject in level 1, 2 or 2.1
+                        subset_lvl1and2 = group[(group['version_form'] == version_form) & ((group['level'] == "Level 1") | (group['level'] == "Level 2") | (group['level'] == "Level 2.1"))]
+
+                        # Drop NaN entries from this subset
+                        subset_lvl1and2 = subset_lvl1and2[subset_lvl1and2['qstot'].notna()]
+
+                        # Get last observed score, which is AT or latest, so long as there are entries left
+                        if subset_lvl1and2.shape[0] != 0:
+                            end_score_trd = subset_lvl1and2.sort_values(by=['days_baseline'], ascending=False).iloc[0]['qstot']
+                            # If subject attains QIDS tot score of less than 5 on this scale, mark them as non-TRD as
+                            # they achieved remission
+                            if end_score_trd <= 5:
+                                y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
+                            # Else, per discussion with Nie et al, mark them as TRD so long as they reached Level
+                            # 2/2.1 and did not drop out We will not drop NaNs so long as in Level 2, as means the
+                            # patient did get to that level.
+                            else:
+                                subset_lvl2 = group[(group['level'] == "Level 2") | (group['level'] == "Level 2.1")]
+                                if subset_lvl2.shape[0] > 0:
+                                    y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 1
+
                         i += 1
     
                 # Create CAN-BIND overlapping targets with QIDS-SR remission
@@ -902,21 +911,32 @@ def generate_y(root_data_dir_path):
                     
                         # Grab the later days_baseline entries
                         subset = group[(group['version_form'] == version_form) & (group['days_baseline'] <= 77)]
+                        # Added due to a bug where there is nan qstot at days_baseline = 0
+                        subset = subset[subset['qstot'].notna()]
+
+                        if subset.shape[0] == 0:
+                            continue
+
                         y_wk8_resp_qids01.loc[i, "target"] = 0
-                        for k, row in subset.iterrows():
-                            #If any of the depression scores at later days_baseline is half or less of baseline, then subject is TRD
-                            if row['qstot'] <= 0.5 * baseline:
-                                y_wk8_resp_qids01.loc[i, "target"] = 1
-                                break
+
+                        end_score = subset.sort_values(by=['days_baseline'], ascending=False).iloc[0]['qstot']
+                        if end_score <= 0.5 * baseline:
+                            y_wk8_resp_qids01.loc[i, "target"] = 1
+
+                        # Old "response BY week 8" implementation
+                        #for k, row in subset.iterrows():
+                        #    #If any of the depression scores at later days_baseline is half or less of baseline, then subject is TRD
+                        #    if row['qstot'] <= 0.5 * baseline:
+                        #        y_wk8_resp_qids01.loc[i, "target"] = 1
+                        #         break
+
                     i += 1
                 
-                if vers == 'c': 
-                    y_lvl2_rem_qids_c = y_lvl2_rem_qids01
-                    y_lvl2_rem_qids_tillwk4_c = y_lvl2_rem_qids01_tillwk4
+                if vers == 'c':
+                    y_nolvl1drop_trdrem_qids01_c = y_nolvl1drop_trdrem_qids01
                     y_wk8_resp_qids_c = y_wk8_resp_qids01
-    
                 elif vers == 'sr': 
-                    y_lvl2_rem_qids_sr = y_lvl2_rem_qids01
+                    y_nolvl1drop_trdrem_qids01_sr = y_nolvl1drop_trdrem_qids01
                     y_wk8_resp_qids_sr = y_wk8_resp_qids01
                 else:
                     Exception()
@@ -932,27 +952,37 @@ def generate_y(root_data_dir_path):
                     
                 
                     # Assign 1 to all subjects who achieve remission within first 8 weeks, which is less than 77 days in their recording as sheets with weeks recorded have days baseline up to 77 given a possible long intro period
-                    subset_c = group[(group['version_form'] == "Clinician") & (group['qstot'] <= 5) & (group['days_baseline'] <= 77)]
-                    subset_sr = group[(group['version_form'] == "Self Rating") & (group['qstot'] <= 5) & (group['days_baseline'] <= 77)]
 
-                    
-                    if subset_c.shape[0] > 0:
-                        y_wk8_rem_qids_c.loc[i, "target"] = 1
-                    else:
-                        y_wk8_rem_qids_c.loc[i, "target"] = 0
-                        
-                    if subset_sr.shape[0] > 0:
-                        y_wk8_rem_qids_sr.loc[i, "target"] = 1
-                    else:
-                        y_wk8_rem_qids_sr.loc[i, "target"] = 0
+                    # Find relevant qstot entries in the first 9 weels (using 9 weeks instead of 8 in CANBIND, 77 days_baseline coresponds to week 9)
+                    subset_c = group[(group['version_form'] == "Clinician") & (group['days_baseline'] <= 77)]
+                    subset_sr = group[(group['version_form'] == "Self Rating") & (group['days_baseline'] <= 77)]
+                    # Drop NaN entries
+                    subset_c = subset_c[subset_c['qstot'].notna()]
+                    subset_sr = subset_sr[subset_sr['qstot'].notna()]
+                    # Get last observed score, which is AT or latest, so long as there are entries left
+                    # QIDS-C Remission
+                    if subset_c.shape[0] != 0:
+                        end_score_c = subset_c.sort_values(by=['days_baseline'], ascending=False).iloc[0]['qstot']
+                        if end_score_c <= 5:
+                            y_wk8_rem_qids_c.loc[i, "target"] = 1
+                        elif (end_score_c >= 0) and (end_score_c < 5):
+                            y_wk8_rem_qids_c.loc[i, "target"] = 0
+
+                    # QIDS-SR Remission
+                    if subset_sr.shape[0] != 0:
+                        end_score_sr = subset_sr.sort_values(by=['days_baseline'], ascending=False).iloc[0]['qstot']
+                        if end_score_sr <= 5:
+                            y_wk8_rem_qids_sr.loc[i, "target"] = 1
+                        elif (end_score_sr >= 0) and (end_score_sr < 5):
+                            y_wk8_rem_qids_sr.loc[i, "target"] = 0
+
+                    # If there are no qids tot values, leave blank
 
                     i += 1
             
-    y_lvl2_rem_qids_c.to_csv(output_y_dir_path + "y_lvl2_rem_qids_c" + CSV_SUFFIX, index=False)
-    y_lvl2_rem_qids_sr.to_csv(output_y_dir_path + "y_lvl2_rem_qids_sr" + CSV_SUFFIX, index=False)
+    y_nolvl1drop_trdrem_qids01_c.to_csv(output_y_dir_path + "y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX, index=False)
+    y_nolvl1drop_trdrem_qids01_sr.to_csv(output_y_dir_path + "y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX, index=False)
 
-    y_lvl2_rem_qids_tillwk4_c.to_csv(output_y_dir_path + "y_lvl2_rem_qids_tillwk4_c" + CSV_SUFFIX, index=False)
-    
     y_wk8_resp_qids_c.to_csv(output_y_dir_path + "y_wk8_resp_qids_c" + CSV_SUFFIX, index=False)
     y_wk8_resp_qids_sr.to_csv(output_y_dir_path + "y_wk8_resp_qids_sr" + CSV_SUFFIX, index=False)
     
@@ -960,6 +990,7 @@ def generate_y(root_data_dir_path):
     y_wk8_rem_qids_sr.to_csv(output_y_dir_path + "y_wk8_rem_qids_sr" + CSV_SUFFIX, index=False)
 
     print("Y output files have  been written to:", output_y_dir_path)
+
 
 def select_subjects(root_data_dir_path):
     output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA
@@ -1150,7 +1181,7 @@ if __name__ == "__main__":
     else:
         raise Exception("Enter valid arguments\n"
               "\t path: the path to a real directory\n"
-              "\t e.g. python stard_preprocessing_manager.py /Users/teyden/Downloads/stardmarch19v3")
+              "\t e.g. python stard_preprocessing_manager.py /Users/teyden/Downloads/stardmarch19v3 -a")
 
 
 

@@ -10,7 +10,7 @@ Adjust number of runs below
 """
 
 if __name__ == "__main__":
-    runs = 100
+    runs = 1
 
     # Table 3: Replication 
     if False:
@@ -43,17 +43,17 @@ if __name__ == "__main__":
         
     
     # Table 5: Comparisons
-    if True:
+    if False:
         table = 'table5_comparisons'
         # Results in order they appear in table
         
         # TRD with QIDS-C and QIDS-R Remission, all STAR*D features, must not drop in lvl 1, as in Nie et al
-        ##RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids_c', table)
-        ##RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_sr', 'y_nolvl1drop_trdrem_qids_sr', table)
+        RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids_c', table)
+        RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_sr', 'y_nolvl1drop_trdrem_qids_sr', table)
 
         # QIDS-C and -SR Remission, cross-validated on STAR*D, using all features of subjects who have QIDS- until week 4, and then with only the features overlapping with CANBIND
-        ##RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_c', 'y_wk8_rem_qids_c', table)
-        ##RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_rem_qids_sr', table)
+        RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_c', 'y_wk8_rem_qids_c', table)
+        RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_rem_qids_sr', table)
         RunResult(runs, "cv", 'rf', 'all', 'X_overlap_tillwk4_qids_sr', 'y_wk8_rem_qids_sr', table)
 
         # QIDS-C and -SR Response, cross-validated on STAR*D, with subjects who have at least week 4 of QIDS-. Varied features, including overlapping and with feature selection
@@ -66,7 +66,10 @@ if __name__ == "__main__":
         # External Validation with QIDS-SR Remission and Response on CANBIND
         RunResult(runs, "extval_rem", 'rf', 'all', 'X_overlap_tillwk4_qids_sr', 'y_tillwk4_wk8_rem_qids_sr', table)
         RunResult(runs, "extval_resp", 'rf', 'all', 'X_overlap_tillwk4_qids_sr', 'y_tillwk4_wk8_resp_qids_sr', table)
-        
+
+    # Temp runs
+    RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids_c', 'quick_old')
+
     print("Ran all succesfully!")
     
     
