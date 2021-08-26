@@ -867,28 +867,64 @@ def generate_y(root_data_dir_path):
                 i = 0
                 for id, group in scale_df.groupby(['subjectkey']):
                     if id in over21_df['subjectkey'].values: # Only generate y if this subject stayed in study for 4 weeks             
+                        # Generate TRD status. Based closely on a snippet provided by Qingqin Li. It does seem to vary
+                        # slight from the Nie et al paper.
+
                         y_nolvl1drop_trdrem_qids01.loc[i,"subjectkey"] = id
 
-                        # Make subset of entries for this subject in level 1, 2 or 2.1
-                        subset_lvl1and2 = group[(group['version_form'] == version_form) & ((group['level'] == "Level 1") | (group['level'] == "Level 2") | (group['level'] == "Level 2.1"))]
+                        # Make subset of entries for this subject in level 1 and in 2 or 2.1
+                        subset_lvl1 = group[(group['version_form'] == version_form) & group['level'] == "Level 1"]
+                        subset_lvl2 = group[(group['version_form'] == version_form) & ((group['level'] == "Level 2") | (group['level'] == "Level 2.1"))]
 
-                        # Drop NaN entries from this subset
-                        subset_lvl1and2 = subset_lvl1and2[subset_lvl1and2['qstot'].notna()]
+                        # Drop NaN entries
+                        subset_lvl1 = subset_lvl1[subset_lvl1['qstot'].notna()]
+                        subset_lvl2 = subset_lvl2[subset_lvl2['qstot'].notna()]
 
-                        # Get last observed score, which is AT or latest, so long as there are entries left
-                        if subset_lvl1and2.shape[0] != 0:
-                            end_score_trd = subset_lvl1and2.sort_values(by=['days_baseline'], ascending=False).iloc[0]['qstot']
-                            # If subject attains QIDS tot score of less than 5 on this scale, mark them as non-TRD as
-                            # they achieved remission
-                            if end_score_trd <= 5:
-                                y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
-                            # Else, per discussion with Nie et al, mark them as TRD so long as they reached Level
-                            # 2/2.1 and did not drop out We will not drop NaNs so long as in Level 2, as means the
-                            # patient did get to that level.
-                            else:
-                                subset_lvl2 = group[(group['level'] == "Level 2") | (group['level'] == "Level 2.1")]
-                                if subset_lvl2.shape[0] > 0:
-                                    y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 1
+                        if subset_lvl1.shape[0] == 0 and subset_lvl2.shape[0] == 0:
+                            # Skip this subject if no entries in either
+                            continue
+
+                        # Check if remitted in Level 1
+                        remission_lvl1 = 'NOT_SET'
+                        sorted_lvl1 = subset_lvl1.sort_values(by=['days_baseline'], ascending=False)
+                        baseline_lvl1 = sorted_lvl1.iloc[-1]['qstot']
+                        locf_lvl1 = sorted_lvl1.iloc[0]['qstot']
+                        locf_wk_lvl1 = sorted_lvl1.iloc[0]['days_baseline']
+
+                        if baseline_lvl1 < 6:
+                            ValueError('woh there was a baseline value less than 5!')
+
+                        if locf_lvl1 <= 5 and locf_wk_lvl1 > 22 and baseline_lvl1 > 5:
+                            remission_lvl1 = True
+                        elif locf_lvl1 >= 6 and locf_wk_lvl1 > 22 and baseline_lvl1 > 5:
+                            remission_lvl1 = False
+
+                        # Level 2 Remission
+                        sorted_lvl2 = subset_lvl2.sort_values(by=['days_baseline'], ascending=False)
+                        baseline_lvl2 = sorted_lvl2.iloc[-1]['qstot']
+                        locf_lvl2 = sorted_lvl2.iloc[0]['qstot']
+                        # locf_wk_lvl2: Because we are missing much of our Week data, we cannot if judge this
+                        # accurately However, per the description in the paper, they either did not mean to or did not
+                        # require level 2 be in for 4 weeks. Can try coming back to later if needed
+
+                        if baseline_lvl2 < 6:
+                            ValueError('woh there was a baseline value less than 5! in Level 2!')
+
+                        if locf_lvl2 <= 5 and baseline_lvl2 > 5:
+                            remission_lvl2 = True
+                        elif locf_lvl2 >= 6 and baseline_lvl2 > 5:
+                            remission_lvl2 = False
+
+                        # Write out based on remission or reaching Level 2. Use same logic as provided by Nie et al
+                        # code snippet
+                        if remission_lvl1:
+                            y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
+                        elif not remission_lvl1 and not remission_lvl2:
+                            y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 1
+                        elif not remission_lvl1 and remission_lvl2:
+                            y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
+                        elif remission_lvl1 == 'NOT_SET' and remission_lvl2:
+                            y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
 
                         i += 1
     
