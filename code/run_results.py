@@ -10,7 +10,7 @@ Adjust number of runs below
 """
 
 if __name__ == "__main__":
-    runs = 5
+    runs = 100
 
     # Table 3: Replication 
     if False:
@@ -68,7 +68,7 @@ if __name__ == "__main__":
         RunResult(runs, "extval_resp", 'rf', 'all', 'X_overlap_tillwk4_qids_sr', 'y_tillwk4_wk8_resp_qids_sr', table)
 
     # Temp runs
-    RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids01_c', 'quick_intermed')
+    RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids01_c', 'quick_qq_at')
 
     print("Ran all succesfully!")
     

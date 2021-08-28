@@ -873,7 +873,7 @@ def generate_y(root_data_dir_path):
                         y_nolvl1drop_trdrem_qids01.loc[i,"subjectkey"] = id
 
                         # Make subset of entries for this subject in level 1 and in 2 or 2.1
-                        subset_lvl1 = group[(group['version_form'] == version_form) & group['level'] == "Level 1"]
+                        subset_lvl1 = group[(group['version_form'] == version_form) & (group['level'] == "Level 1")]
                         subset_lvl2 = group[(group['version_form'] == version_form) & ((group['level'] == "Level 2") | (group['level'] == "Level 2.1"))]
 
                         # Drop NaN entries
@@ -885,45 +885,50 @@ def generate_y(root_data_dir_path):
                             continue
 
                         # Check if remitted in Level 1
-                        remission_lvl1 = 'NOT_SET'
-                        sorted_lvl1 = subset_lvl1.sort_values(by=['days_baseline'], ascending=False)
-                        baseline_lvl1 = sorted_lvl1.iloc[-1]['qstot']
-                        locf_lvl1 = sorted_lvl1.iloc[0]['qstot']
-                        locf_wk_lvl1 = sorted_lvl1.iloc[0]['days_baseline']
+                        remission_lvl1 = 'MISSING'
+                        if subset_lvl1.shape[0] != 0:
+                            sorted_lvl1 = subset_lvl1.sort_values(by=['days_baseline'], ascending=False)
+                            baseline_lvl1 = sorted_lvl1.iloc[-1]['qstot']
+                            locf_lvl1 = sorted_lvl1.iloc[0]['qstot']
+                            locf_wk_lvl1 = sorted_lvl1.iloc[0]['days_baseline']
 
-                        if baseline_lvl1 < 6:
-                            ValueError('woh there was a baseline value less than 5!')
+                            if baseline_lvl1 < 6:
+                                ValueError('woh there was a baseline value less than 5!')
 
-                        if locf_lvl1 <= 5 and locf_wk_lvl1 > 22 and baseline_lvl1 > 5:
-                            remission_lvl1 = True
-                        elif locf_lvl1 >= 6 and locf_wk_lvl1 > 22 and baseline_lvl1 > 5:
-                            remission_lvl1 = False
+                            if locf_lvl1 <= 5 and locf_wk_lvl1 > 22 and baseline_lvl1 > 5:
+                                remission_lvl1 = 'YES'
+                            elif locf_lvl1 >= 6 and locf_wk_lvl1 > 22 and baseline_lvl1 > 5:
+                                remission_lvl1 = 'NO'
 
                         # Level 2 Remission
-                        sorted_lvl2 = subset_lvl2.sort_values(by=['days_baseline'], ascending=False)
-                        baseline_lvl2 = sorted_lvl2.iloc[-1]['qstot']
-                        locf_lvl2 = sorted_lvl2.iloc[0]['qstot']
-                        # locf_wk_lvl2: Because we are missing much of our Week data, we cannot if judge this
-                        # accurately However, per the description in the paper, they either did not mean to or did not
-                        # require level 2 be in for 4 weeks. Can try coming back to later if needed
+                        remission_lvl2 = 'MISSING'
+                        if subset_lvl2.shape[0] != 0:
+                            sorted_lvl2 = subset_lvl2.sort_values(by=['days_baseline'], ascending=False)
+                            baseline_lvl2 = sorted_lvl2.iloc[-1]['qstot']
+                            locf_lvl2 = sorted_lvl2.iloc[0]['qstot']
+                            # locf_wk_lvl2: Because we are missing much of our Week data, we cannot if judge this
+                            # accurately However, per the description in the paper, they either did not mean to or did not
+                            # require level 2 be in for 4 weeks. Can try coming back to later if needed
 
-                        if baseline_lvl2 < 6:
-                            ValueError('woh there was a baseline value less than 5! in Level 2!')
+                            if baseline_lvl2 < 6:
+                                ValueError('woh there was a baseline value less than 5! in Level 2!')
 
-                        if locf_lvl2 <= 5 and baseline_lvl2 > 5:
-                            remission_lvl2 = True
-                        elif locf_lvl2 >= 6 and baseline_lvl2 > 5:
-                            remission_lvl2 = False
+                            if locf_lvl2 <= 5 and baseline_lvl2 > 5:
+                                remission_lvl2 = 'YES'
+                            elif locf_lvl2 >= 6 and baseline_lvl2 > 5:
+                                remission_lvl2 = 'NO'
 
                         # Write out based on remission or reaching Level 2. Use same logic as provided by Nie et al
-                        # code snippet
-                        if remission_lvl1:
+                        # code snippet, which could be simplified
+                        #print(f'Heres readmission_lvl1: {remission_lvl1} and readmission_lvl2: {remission_lvl2}')
+
+                        if remission_lvl1 == 'YES':
                             y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
-                        elif not remission_lvl1 and not remission_lvl2:
+                        elif remission_lvl1 == 'NO' and remission_lvl2 == 'NO':
                             y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 1
-                        elif not remission_lvl1 and remission_lvl2:
+                        elif remission_lvl1 == 'NO' and remission_lvl2 == 'YES':
                             y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
-                        elif remission_lvl1 == 'NOT_SET' and remission_lvl2:
+                        elif remission_lvl1 == 'MISSING' and remission_lvl2 == 'YES':
                             y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
 
                         i += 1
