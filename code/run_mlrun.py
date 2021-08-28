@@ -166,8 +166,7 @@ def RunMLRun(pathData, pathLabel, f_select, model, evl, ensemble_n=30, n_splits=
         score = sum(pred==y_test)/n
         accu[j-1] = score
         clfs[j-1] = clf
-        
-        
+
         j = j+1
     
     confus_mat ={}

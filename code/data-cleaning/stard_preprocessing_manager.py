@@ -11,19 +11,12 @@ from stard_preprocessing_globals import ORIGINAL_SCALE_NAMES, BLACK_LIST_SCALES,
     VALUE_CONVERSION_MAP_IMPUTE, NEW_FEATURES
 
 """ 
-This is our preprocess for the raw STAR*D data from the NIMH, producing the 
+This is the main code for our preprocess for the raw STAR*D data from the NIMH, producing the 
 preprocessed STAR*D data, which can be used for ML or further processed into
 the dataset overlapping with CAN-BIND, etc.
 
-Takes 2 Arguments on command-line:
-    Direcotory containing all the raw STAR*D data from the NDA
-    
-    Run-option. See main for complete list, allows only one part of the 
-    preprocessing to be ran at a time. Use "--run-all" or "-a" to 
-    do the entire preprocessing. 
-
-Example Run configuration:
-runfile('C:/Users/jjnun/Documents/Sync/Research/1_CANBIND_Replication/teyden-git/code/data-cleaning/stard_preprocessing_manager.py', args='C:/Users/jjnun/Documents/Sync/Research/1_CANBIND_Replication/teyden-git/data/stard_data -a', wdir='C:/Users/jjnun/Documents/Sync/Research/1_CANBIND_Replication/teyden-git/code/data-cleaning')
+It is provided the holdout set label (holdout, non_holdout, all), as well as the subject ids corresponding, and generates 
+all from there  
 
 This will take in multiple text files (representing psychiatric scales) and output multiple CSV files, at least for each scale read in.
 """
@@ -37,7 +30,7 @@ IMPUTED_PREFIX = AGGREGATED_ROWS_PREFIX + "im__"
 
 CSV_SUFFIX = ".csv"
 
-DIR_PROCESSED_DATA = "processed_data"
+DIR_PROCESSED_DATA = "processed_data\\"
 DIR_ROW_SELECTED = "row_selected_scales"
 DIR_COLUMN_SELECTED = "column_selected_scales"
 DIR_ONE_HOT_ENCODED = "one_hot_encoded_scales"
@@ -49,8 +42,8 @@ DIR_SUBJECT_SELECTED = "final_xy_data_matrices"
 
 LINE_BREAK = "*************************************************************"
 
-def select_rows(input_dir_path):
-    output_dir_path = input_dir_path + "/" + DIR_PROCESSED_DATA
+def select_rows(input_dir_path, read_csv_filter, holdout_label='all'):
+    output_dir_path = input_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
     output_row_selected_dir_path = output_dir_path + "/" + DIR_ROW_SELECTED + "/"
 
     print("\n--------------------------------1. ROW SELECTION-----------------------------------\n")
@@ -70,7 +63,7 @@ def select_rows(input_dir_path):
         curr_scale_path = input_dir_path + "/" + filename
 
         # Read in the txt file + preliminary processing
-        scale_df = pd.read_csv(curr_scale_path, sep='\t', skiprows=[1])
+        scale_df = read_csv_filter(curr_scale_path, sep='\t', skiprows=[1])
         scale_df = drop_empty_columns(scale_df)
 
         print(LINE_BREAK)
@@ -203,7 +196,7 @@ def select_rows(input_dir_path):
     # Handle preqids, after looping through the original scales
     preqids_file_path = output_row_selected_dir_path + "prers__preqids01.csv"
     if os.path.exists(preqids_file_path):
-        scale_df = pd.read_csv(preqids_file_path)
+        scale_df = read_csv_filter(preqids_file_path)
         # scale_df = scale_df.drop(columns=["Unnamed: 0"])
 
         # Convert column to numeric type
@@ -291,8 +284,8 @@ def select_subject_rows(scale_df, scale_name, selection_criteria, debug=False):
 """
 root_data_dir_path is the path to the root of the folder containing the original scales
 """
-def select_columns(root_data_dir_path):
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA
+def select_columns(root_data_dir_path, read_csv_filter, holdout_label='all'):
+    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
     output_row_selected_dir_path = output_dir_path + "/" + DIR_ROW_SELECTED + "/"
     output_column_selected_dir_path = output_dir_path + "/" + DIR_COLUMN_SELECTED + "/"
 
@@ -317,7 +310,7 @@ def select_columns(root_data_dir_path):
         print("Handling scale =", scale_name, ", filename =", filename)
 
         # Read in the txt file + preliminary processing
-        scale_df = pd.read_csv(curr_scale_path)
+        scale_df = read_csv_filter(curr_scale_path)
 
         # Drop empty columns
         scale_df = drop_empty_columns(scale_df)
@@ -334,8 +327,8 @@ def select_columns(root_data_dir_path):
         output_file_name = COLUMN_SELECTION_PREFIX + scale_name
         scale_df.to_csv(output_column_selected_dir_path + output_file_name + CSV_SUFFIX, index=False)
 
-def one_hot_encode_scales(root_data_dir_path):
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA
+def one_hot_encode_scales(root_data_dir_path, read_csv_filter, holdout_label='all'):
+    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
     output_column_selected_dir_path = output_dir_path + "/" + DIR_COLUMN_SELECTED + "/"
     output_one_hot_encoded_dir_path = output_dir_path + "/" + DIR_ONE_HOT_ENCODED + "/"
 
@@ -363,7 +356,7 @@ def one_hot_encode_scales(root_data_dir_path):
         print("Handling scale =", scale_name, ", filename =", filename)
 
         # Read in the txt file
-        scale_df = pd.read_csv(input_dir_path + "/" + filename)
+        scale_df = read_csv_filter(input_dir_path + "/" + filename)
 
         if scale_name == "dm01_enroll":
             cols_to_convert = ['empl', 'volun', 'leave', 'publica', 'medicaid', 'privins']
@@ -417,7 +410,8 @@ def one_hot_encode_scales(root_data_dir_path):
         output_file_name = ONE_HOT_ENCODED_PREFIX + scale_name
         scale_df.to_csv(output_one_hot_encoded_dir_path + output_file_name + CSV_SUFFIX, index=False)
 
-def convert_values(root_data_dir_path):
+
+def convert_values(root_data_dir_path, read_csv_filter, holdout_label):
     """
     Handles converting values for different variables per scale. This is similar to the imputation step, in that certain
     values are being derived, however the difference is that this step handles it solely on the scale-level. For (1) generic
@@ -425,7 +419,7 @@ def convert_values(root_data_dir_path):
     between different scales, then this will be handled in step #6, imputation. 
     """
 
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA
+    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
     output_one_hot_encoded_dir_path = output_dir_path + "/" + DIR_ONE_HOT_ENCODED + "/"
     output_values_converted_dir_path = output_dir_path + "/" + DIR_VALUES_CONVERTED + "/"
 
@@ -448,7 +442,7 @@ def convert_values(root_data_dir_path):
         print("Handling scale =", scale_name, ", filename =", filename)
 
         # Read in the txt file
-        scale_df = pd.read_csv(input_dir_path + "/" + filename)
+        scale_df = read_csv_filter(input_dir_path + "/" + filename)
 
         for col_name in scale_df.columns.values:
             for key, dict in VALUE_CONVERSION_MAP.items():
@@ -499,8 +493,8 @@ def handle_replace_if_row_null(df, col_name):
             df.at[i, col_name] = 0
     return df
 
-def aggregate_rows(root_data_dir_path):
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA
+def aggregate_rows(root_data_dir_path, read_csv_filter, holdout_label='all'):
+    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
     output_values_converted_dir_path = output_dir_path + "/" + DIR_VALUES_CONVERTED + "/"
     output_aggregated_rows_dir_path = output_dir_path + "/" + DIR_AGGREGATED_ROWS + "/"
 
@@ -526,7 +520,7 @@ def aggregate_rows(root_data_dir_path):
         print("Handling scale =", scale_name, ", filename =", filename)
 
         # Read in the txt file
-        scale_df = pd.read_csv(input_dir_path + "/" + filename)
+        scale_df = read_csv_filter(input_dir_path + "/" + filename)
 
         # Append scale name and version to the column name
         cols = {}
@@ -558,9 +552,9 @@ def aggregate_rows(root_data_dir_path):
     aggregated_df = aggregated_df.reindex(columns=(main_keys + list([a for a in aggregated_df.columns if a not in main_keys])))
     aggregated_df.to_csv(output_aggregated_rows_dir_path + output_file_name + CSV_SUFFIX, index=False)
 
-def impute(root_data_dir_path):
+def impute(root_data_dir_path, read_csv_filter, holdout_label='all'):
     warnings.filterwarnings("ignore", category=FutureWarning)
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA
+    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
     output_aggregated_rows_dir_path = output_dir_path + "/" + DIR_AGGREGATED_ROWS + "/"
     output_imputed_dir_path = output_dir_path + "/" + DIR_IMPUTED + "/"
 
@@ -586,7 +580,7 @@ def impute(root_data_dir_path):
         print("Handling full data matrix =", scale_name, ", filename =", filename)
 
         # Read in the txt file
-        agg_df = pd.read_csv(input_dir_path + "/" + filename)
+        agg_df = read_csv_filter(input_dir_path + "/" + filename)
 
         # Handle replace with mode or median
         agg_df = replace_with_median(agg_df, list(VALUE_CONVERSION_MAP_IMPUTE["blank_to_median"]["col_names"]))
@@ -600,7 +594,7 @@ def impute(root_data_dir_path):
         agg_df = replace(agg_df, list(blank_to_one_config["col_names"]), blank_to_one_config["conversion_map"])
         agg_df = replace(agg_df, list(blank_to_twenty_config["col_names"]), blank_to_twenty_config["conversion_map"])
 
-        crs01_df = pd.read_csv(root_data_dir_path + "/crs01.txt", sep="\t", skiprows=[1])
+        crs01_df = read_csv_filter(root_data_dir_path + "/crs01.txt", sep="\t", skiprows=[1])
         crs01_df.loc[:, "interview_age"] = crs01_df["interview_age"].astype("float")
 
         for new_feature in NEW_FEATURES:
@@ -820,8 +814,8 @@ def one_hot_encode(df, columns):
 def drop_empty_columns(df):
     return df.dropna(axis="columns", how="all")  # Drop columns that are all empty
 
-def generate_y(root_data_dir_path):
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA
+def generate_y(root_data_dir_path, read_csv_filter, holdout_label='all'):
+    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
     output_y_dir_path = output_dir_path + "/" + DIR_Y_MATRIX + "/"
 
     print("\n--------------------------------7. Y MATRIX GENERATION-----------------------------------\n")
@@ -841,7 +835,7 @@ def generate_y(root_data_dir_path):
         curr_scale_path = root_data_dir_path + "/" + filename
 
         # Read in the txt file + preliminary processing
-        scale_df = pd.read_csv(curr_scale_path, sep='\t', skiprows=[1])
+        scale_df = read_csv_filter(curr_scale_path, sep='\t', skiprows=[1])
 
         print(LINE_BREAK)
         print("Handling scale = ", scale_name)
@@ -1034,8 +1028,8 @@ def generate_y(root_data_dir_path):
     print("Y output files have  been written to:", output_y_dir_path)
 
 
-def select_subjects(root_data_dir_path):
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA
+def select_subjects(root_data_dir_path, read_csv_filter, holdout_label='all'):
+    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
     output_subject_selected_path = output_dir_path + "/" + DIR_SUBJECT_SELECTED + "/"
 
     input_imputed_dir_path = output_dir_path + "/" + DIR_IMPUTED + "/"
@@ -1049,7 +1043,7 @@ def select_subjects(root_data_dir_path):
     if not os.path.exists(output_subject_selected_path):
         os.mkdir(output_subject_selected_path)
 
-    orig_data_matrix = pd.read_csv(input_imputed_dir_path + "/rs__cs__ohe__vc__ag__im__stard_data_matrix.csv")
+    orig_data_matrix = read_csv_filter(input_imputed_dir_path + "/rs__cs__ohe__vc__ag__im__stard_data_matrix.csv")
 
     # New final X matrices
     X_nolvl1drop_qids_c = orig_data_matrix
@@ -1061,28 +1055,28 @@ def select_subjects(root_data_dir_path):
 
     ### Handle the TRD stuff
     
-    y_nolvl1drop_trdrem_qids01_c = pd.read_csv(input_y_generation_dir_path + "/y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX)
-    y_nolvl1drop_trdrem_qids01_sr = pd.read_csv(input_y_generation_dir_path + "/y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX)
+    y_nolvl1drop_trdrem_qids01_c = read_csv_filter(input_y_generation_dir_path + "/y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX)
+    y_nolvl1drop_trdrem_qids01_sr = read_csv_filter(input_y_generation_dir_path + "/y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX)
 
-    X_nolvl1drop_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_c, y_nolvl1drop_trdrem_qids01_c, 'c')
-    X_nolvl1drop_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_sr, y_nolvl1drop_trdrem_qids01_sr, 'sr')
+    X_nolvl1drop_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_c, y_nolvl1drop_trdrem_qids01_c, 'c', read_csv_filter)
+    X_nolvl1drop_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_sr, y_nolvl1drop_trdrem_qids01_sr, 'sr', read_csv_filter)
 
     # Subset the y matrices so that it matches the X matrices
     y_nolvl1drop_trdrem_qids01_c__final = y_nolvl1drop_trdrem_qids01_c[y_nolvl1drop_trdrem_qids01_c.subjectkey.isin(X_nolvl1drop_qids_c__final.subjectkey)]
     y_nolvl1drop_trdrem_qids01_sr__final = y_nolvl1drop_trdrem_qids01_sr[y_nolvl1drop_trdrem_qids01_sr.subjectkey.isin(X_nolvl1drop_qids_sr__final.subjectkey)]
 
     # Handle the week8 response stuff
-    y_wk8_resp_qids_c = pd.read_csv(input_y_generation_dir_path + "/y_wk8_resp_qids_c" + CSV_SUFFIX)
-    y_wk8_resp_qids_sr = pd.read_csv(input_y_generation_dir_path + "/y_wk8_resp_qids_sr" + CSV_SUFFIX)
+    y_wk8_resp_qids_c = read_csv_filter(input_y_generation_dir_path + "/y_wk8_resp_qids_c" + CSV_SUFFIX)
+    y_wk8_resp_qids_sr = read_csv_filter(input_y_generation_dir_path + "/y_wk8_resp_qids_sr" + CSV_SUFFIX)
 
     # Handle the week8 remission stuff
-    y_wk8_rem_qids_c = pd.read_csv(input_y_generation_dir_path + "/y_wk8_rem_qids_c" + CSV_SUFFIX)
-    y_wk8_rem_qids_sr = pd.read_csv(input_y_generation_dir_path + "/y_wk8_rem_qids_sr" + CSV_SUFFIX)    
+    y_wk8_rem_qids_c = read_csv_filter(input_y_generation_dir_path + "/y_wk8_rem_qids_c" + CSV_SUFFIX)
+    y_wk8_rem_qids_sr = read_csv_filter(input_y_generation_dir_path + "/y_wk8_rem_qids_sr" + CSV_SUFFIX)
 
     # Handle the X matrices of subjects who stayed until week 4
     # These use one of the y's, but it doesn't matter as only uses for subject selection which is same between those y matrices
-    X_tillwk4_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_tillwk4_qids_c, y_wk8_rem_qids_c, 'c')
-    X_tillwk4_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_tillwk4_qids_sr, y_wk8_rem_qids_sr, 'sr')    
+    X_tillwk4_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_tillwk4_qids_c, y_wk8_rem_qids_c, 'c', read_csv_filter)
+    X_tillwk4_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_tillwk4_qids_sr, y_wk8_rem_qids_sr, 'sr', read_csv_filter)
 
     
     # Subset the y matrices so that they matches the X matrices
@@ -1113,25 +1107,25 @@ def select_subjects(root_data_dir_path):
     
 
     # Output X matrices to CSV
-    X_nolvl1drop_qids_c__final.to_csv(output_subject_selected_path + "X_nolvl1drop_qids_c__final" + CSV_SUFFIX, index=False)
-    X_nolvl1drop_qids_sr__final.to_csv(output_subject_selected_path + "X_nolvl1drop_qids_sr__final" + CSV_SUFFIX, index=False)
-    X_tillwk4_qids_c__final.to_csv(output_subject_selected_path + "X_tillwk4_qids_c__final" + CSV_SUFFIX, index=False)
-    X_tillwk4_qids_sr__final.to_csv(output_subject_selected_path + "X_tillwk4_qids_sr__final" + CSV_SUFFIX, index=False)
+    X_nolvl1drop_qids_c__final.to_csv(output_subject_selected_path + "X_nolvl1drop_qids_c_" + holdout_label + + CSV_SUFFIX, index=False)
+    X_nolvl1drop_qids_sr__final.to_csv(output_subject_selected_path + "X_nolvl1drop_qids_sr_" + holdout_label + + CSV_SUFFIX, index=False)
+    X_tillwk4_qids_c__final.to_csv(output_subject_selected_path + "X_tillwk4_qids_c_" + holdout_label + + CSV_SUFFIX, index=False)
+    X_tillwk4_qids_sr__final.to_csv(output_subject_selected_path + "X_tillwk4_qids_sr_" + holdout_label + + CSV_SUFFIX, index=False)
 
     # Output y matrices to CSV
-    y_nolvl1drop_trdrem_qids01_c__final.to_csv(output_subject_selected_path + "y_nolvl1drop_trdrem_qids01_c__final" + CSV_SUFFIX, index=False)
-    y_nolvl1drop_trdrem_qids01_sr__final.to_csv(output_subject_selected_path + "y_nolvl1drop_trdrem_qids01_sr__final" + CSV_SUFFIX, index=False)
-    y_wk8_resp_qids_c__final.to_csv(output_subject_selected_path + "y_wk8_resp_qids_c__final" + CSV_SUFFIX, index=False)
-    y_wk8_resp_qids_sr__final.to_csv(output_subject_selected_path + "y_wk8_resp_qids_sr__final" + CSV_SUFFIX, index=False)
-    y_wk8_rem_qids_c__final.to_csv(output_subject_selected_path + "y_wk8_rem_qids_c__final" + CSV_SUFFIX, index=False)
-    y_wk8_rem_qids_sr__final.to_csv(output_subject_selected_path + "y_wk8_rem_qids_sr__final" + CSV_SUFFIX, index=False)
+    y_nolvl1drop_trdrem_qids01_c__final.to_csv(output_subject_selected_path + "y_nolvl1drop_trdrem_qids_c_" + holdout_label + CSV_SUFFIX, index=False)
+    y_nolvl1drop_trdrem_qids01_sr__final.to_csv(output_subject_selected_path + "y_nolvl1drop_trdrem_qids_sr_" + holdout_label + CSV_SUFFIX, index=False)
+    y_wk8_resp_qids_c__final.to_csv(output_subject_selected_path + "y_wk8_resp_qids_c_" + holdout_label + CSV_SUFFIX, index=False)
+    y_wk8_resp_qids_sr__final.to_csv(output_subject_selected_path + "y_wk8_resp_qids_sr_" + holdout_label + CSV_SUFFIX, index=False)
+    y_wk8_rem_qids_c__final.to_csv(output_subject_selected_path + "y_wk8_rem_qids_c_" + holdout_label + CSV_SUFFIX, index=False)
+    y_wk8_rem_qids_sr__final.to_csv(output_subject_selected_path + "y_wk8_rem_qids_sr_" + holdout_label + CSV_SUFFIX, index=False)
 
     y_wk8_resp_qids_sr_nolvl1drop.to_csv(output_subject_selected_path + "y_wk8_resp_qids_sr_nolvl1drop" + CSV_SUFFIX, index=False)
     y_wk8_resp_qids_c_nolvl1drop.to_csv(output_subject_selected_path + "y_wk8_resp_qids_c_nolvl1drop" + CSV_SUFFIX, index=False)
     
     print("Files written to: ", output_subject_selected_path)
 
-def handle_subject_selection_conditions(input_row_selected_dir_path, X, y_df, qids_version):
+def handle_subject_selection_conditions(input_row_selected_dir_path, X, y_df, qids_version, read_csv_filter):
     # New subject selection handling function, will select based on qids version ('sr' or 'c')
     
     # Select subjects with corresponding y values
@@ -1139,11 +1133,11 @@ def handle_subject_selection_conditions(input_row_selected_dir_path, X, y_df, qi
     X = X[X["subjectkey"].isin(y["subjectkey"])]
     
     # Select subjects that have ucq entries, aka eliminate subjects that don't have ucq entries, as a proxy for the small amount of subjects missing most patients. 
-    file_ucq = pd.read_csv(input_row_selected_dir_path + "/rs__ucq01" + CSV_SUFFIX)
+    file_ucq = read_csv_filter(input_row_selected_dir_path + "/rs__ucq01" + CSV_SUFFIX)
     X = X[X["subjectkey"].isin(file_ucq["subjectkey"])]
     
     # Eliminate subjects that don't have week0 QIDS entries from either QIDS-C or QIDS-SR
-    file_qids01_w0c = pd.read_csv(input_row_selected_dir_path + "/rs__qids01_w0" + qids_version + CSV_SUFFIX)
+    file_qids01_w0c = read_csv_filter(input_row_selected_dir_path + "/rs__qids01_w0" + qids_version + CSV_SUFFIX)
     X = X[X["subjectkey"].isin(file_qids01_w0c["subjectkey"])]
 
     return X
@@ -1156,62 +1150,6 @@ def get_row(scale_df, subjectkey):
                     | scale_df["unempl"].notnull()
                     | scale_df["otherinc"].notnull()
                     | scale_df["totincom"].notnull())]
-
-
-
-if __name__ == "__main__":
-    data_dir_path = sys.argv[1]
-    option = sys.argv[2]
-    is_valid = len(sys.argv) == 3 and os.path.isdir(data_dir_path)
-
-    if is_valid and option in ["--row-select", "-rs"]:
-        select_rows(data_dir_path)
-
-    elif is_valid and option in ["--column-select", "-cs"]:
-        select_columns(data_dir_path)
-
-    elif is_valid and option in ["--one-hot-encode", "-ohe"]:
-        one_hot_encode_scales(data_dir_path)
-
-    elif is_valid and option in ["--value-convert", "-vc"]:
-        convert_values(data_dir_path)
-
-    elif is_valid and option in ["--aggregate-rows", "-ag"]:
-        aggregate_rows(data_dir_path)
-
-    elif is_valid and option in ["--impute", "-im"]:
-        impute(data_dir_path)
-
-    elif is_valid and option in ["--y-generation", "-y"]:
-        generate_y(data_dir_path)
-
-    elif is_valid and option in ["--subject-select", "-ss"]:
-        select_subjects(data_dir_path)
-
-    elif is_valid and option in ["--run-all", "-a"]:
-        select_rows(data_dir_path)
-        select_columns(data_dir_path)
-        one_hot_encode_scales(data_dir_path)
-        convert_values(data_dir_path)
-        aggregate_rows(data_dir_path)
-        impute(data_dir_path)
-        generate_y(data_dir_path)
-        select_subjects(data_dir_path)
-
-        print("\nSteps complete:\n" +
-              "\t Row selection\n" +
-              "\t Column selection\n" +
-              "\t One-hot encoding\n" +
-              "\t Value conversion\n" +
-              "\t Row aggregation (generate a single matrix)\n" +
-              "\t Imputation of missing values\n" +
-              "\t Generation of y matrices\n" +
-              "\t Subject selection\n")
-
-    else:
-        raise Exception("Enter valid arguments\n"
-              "\t path: the path to a real directory\n"
-              "\t e.g. python stard_preprocessing_manager.py /Users/teyden/Downloads/stardmarch19v3 -a")
 
 
 
