@@ -890,14 +890,18 @@ def generate_y(root_data_dir_path):
                             sorted_lvl1 = subset_lvl1.sort_values(by=['days_baseline'], ascending=False)
                             baseline_lvl1 = sorted_lvl1.iloc[-1]['qstot']
                             locf_lvl1 = sorted_lvl1.iloc[0]['qstot']
-                            locf_wk_lvl1 = sorted_lvl1.iloc[0]['days_baseline']
+                            baseline_lvl1_start_day = sorted_lvl1.iloc[-1]['days_baseline']
+                            locf_lvl1_end_day = sorted_lvl1.iloc[0]['days_baseline']
+                            lvl1_days_in = locf_lvl1_end_day - baseline_lvl1_start_day # As week data is often
+                            # missing, use difference in days_baseline instead, as over 21 days corresponds to 4 or
+                            # more weeks according to the week data we do have
 
                             if baseline_lvl1 < 6:
                                 ValueError('woh there was a baseline value less than 5!')
 
-                            if locf_lvl1 <= 5 and locf_wk_lvl1 > 22 and baseline_lvl1 > 5:
+                            if locf_lvl1 <= 5 and baseline_lvl1 > 5:  # and lvl1_days_in > 21
                                 remission_lvl1 = 'YES'
-                            elif locf_lvl1 >= 6 and locf_wk_lvl1 > 22 and baseline_lvl1 > 5:
+                            elif locf_lvl1 >= 6 and lvl1_days_in > 21 and baseline_lvl1 > 5:
                                 remission_lvl1 = 'NO'
 
                         # Level 2 Remission
@@ -906,16 +910,18 @@ def generate_y(root_data_dir_path):
                             sorted_lvl2 = subset_lvl2.sort_values(by=['days_baseline'], ascending=False)
                             baseline_lvl2 = sorted_lvl2.iloc[-1]['qstot']
                             locf_lvl2 = sorted_lvl2.iloc[0]['qstot']
-                            # locf_wk_lvl2: Because we are missing much of our Week data, we cannot if judge this
-                            # accurately However, per the description in the paper, they either did not mean to or did not
-                            # require level 2 be in for 4 weeks. Can try coming back to later if needed
+                            baseline_lvl2_start_day = sorted_lvl2.iloc[-1]['days_baseline']
+                            locf_lvl2_end_day = sorted_lvl2.iloc[0]['days_baseline']
+                            lvl2_days_in = locf_lvl2_end_day - baseline_lvl2_start_day  # As week data is often
+                            # missing, use difference in days_baseline instead, as over 21 days corresponds to 4 or
+                            # more weeks according to the week data we do have
 
                             if baseline_lvl2 < 6:
                                 ValueError('woh there was a baseline value less than 5! in Level 2!')
 
                             if locf_lvl2 <= 5 and baseline_lvl2 > 5:
                                 remission_lvl2 = 'YES'
-                            elif locf_lvl2 >= 6 and baseline_lvl2 > 5:
+                            elif locf_lvl2 >= 6 and lvl2_days_in > 21 and baseline_lvl2 > 5:
                                 remission_lvl2 = 'NO'
 
                         # Write out based on remission or reaching Level 2. Use same logic as provided by Nie et al
