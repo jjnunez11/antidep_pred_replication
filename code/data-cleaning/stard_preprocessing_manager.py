@@ -30,7 +30,7 @@ IMPUTED_PREFIX = AGGREGATED_ROWS_PREFIX + "im__"
 
 CSV_SUFFIX = ".csv"
 
-DIR_PROCESSED_DATA = "processed_data\\"
+DIR_PROCESSED_DATA = "processed_data"
 DIR_ROW_SELECTED = "row_selected_scales"
 DIR_COLUMN_SELECTED = "column_selected_scales"
 DIR_ONE_HOT_ENCODED = "one_hot_encoded_scales"
@@ -42,11 +42,15 @@ DIR_SUBJECT_SELECTED = "final_xy_data_matrices"
 
 LINE_BREAK = "*************************************************************"
 
+
 def select_rows(input_dir_path, read_csv_filter, holdout_label='all'):
-    output_dir_path = input_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
+    output_dir_root_path = os.path.join(input_dir_path, DIR_PROCESSED_DATA)
+    output_dir_path = os.path.join(output_dir_root_path, holdout_label)
     output_row_selected_dir_path = output_dir_path + "/" + DIR_ROW_SELECTED + "/"
 
     print("\n--------------------------------1. ROW SELECTION-----------------------------------\n")
+    if not os.path.exists(output_dir_root_path):
+        os.mkdir(output_dir_root_path)
 
     for filename in os.listdir(input_dir_path):
         if not os.path.exists(output_dir_path):
@@ -242,6 +246,7 @@ def select_rows(input_dir_path, read_csv_filter, holdout_label='all'):
         criteria_3_df.to_csv(output_row_selected_dir_path + output_file_name_3 + CSV_SUFFIX, index=False)
         criteria_4_df.to_csv(output_row_selected_dir_path + output_file_name_4 + CSV_SUFFIX, index=False)
 
+
 def select_subject_rows(scale_df, scale_name, selection_criteria, debug=False):
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     if selection_criteria == {}:
@@ -281,13 +286,16 @@ def select_subject_rows(scale_df, scale_name, selection_criteria, debug=False):
 
     return scale_df
 
+
 """
 root_data_dir_path is the path to the root of the folder containing the original scales
 """
+
+
 def select_columns(root_data_dir_path, read_csv_filter, holdout_label='all'):
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
-    output_row_selected_dir_path = output_dir_path + "/" + DIR_ROW_SELECTED + "/"
-    output_column_selected_dir_path = output_dir_path + "/" + DIR_COLUMN_SELECTED + "/"
+    output_dir_path = os.path.join(root_data_dir_path, DIR_PROCESSED_DATA, holdout_label)
+    output_row_selected_dir_path = os.path.join(output_dir_path, DIR_ROW_SELECTED)
+    output_column_selected_dir_path = os.path.join(output_dir_path, DIR_COLUMN_SELECTED)
 
     input_dir_path = output_row_selected_dir_path
 
@@ -325,13 +333,13 @@ def select_columns(root_data_dir_path, read_csv_filter, holdout_label='all'):
         scale_df = scale_df[whitelist]
 
         output_file_name = COLUMN_SELECTION_PREFIX + scale_name
-        scale_df.to_csv(output_column_selected_dir_path + output_file_name + CSV_SUFFIX, index=False)
+
+        scale_df.to_csv(os.path.join(output_column_selected_dir_path, output_file_name + CSV_SUFFIX), index=False)
 
 def one_hot_encode_scales(root_data_dir_path, read_csv_filter, holdout_label='all'):
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
-    output_column_selected_dir_path = output_dir_path + "/" + DIR_COLUMN_SELECTED + "/"
-    output_one_hot_encoded_dir_path = output_dir_path + "/" + DIR_ONE_HOT_ENCODED + "/"
-
+    output_dir_path = os.path.join(root_data_dir_path, DIR_PROCESSED_DATA, holdout_label)
+    output_column_selected_dir_path = os.path.join(output_dir_path, DIR_COLUMN_SELECTED)
+    output_one_hot_encoded_dir_path = os.path.join(output_dir_path, DIR_ONE_HOT_ENCODED)
     input_dir_path = output_column_selected_dir_path
 
     print("\n--------------------------------3. ONE HOT ENCODING-----------------------------------\n")
@@ -408,7 +416,7 @@ def one_hot_encode_scales(root_data_dir_path, read_csv_filter, holdout_label='al
             scale_df = scale_df.drop(columns=cols_to_one_hot_encode)
 
         output_file_name = ONE_HOT_ENCODED_PREFIX + scale_name
-        scale_df.to_csv(output_one_hot_encoded_dir_path + output_file_name + CSV_SUFFIX, index=False)
+        scale_df.to_csv(os.path.join(output_one_hot_encoded_dir_path, output_file_name + CSV_SUFFIX) , index=False)
 
 
 def convert_values(root_data_dir_path, read_csv_filter, holdout_label):
@@ -418,11 +426,9 @@ def convert_values(root_data_dir_path, read_csv_filter, holdout_label):
     value conversion that is common across all scales, or (2) value conversion/imputation is dependent on values of features
     between different scales, then this will be handled in step #6, imputation. 
     """
-
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
-    output_one_hot_encoded_dir_path = output_dir_path + "/" + DIR_ONE_HOT_ENCODED + "/"
-    output_values_converted_dir_path = output_dir_path + "/" + DIR_VALUES_CONVERTED + "/"
-
+    output_dir_path = os.path.join(root_data_dir_path, DIR_PROCESSED_DATA, holdout_label)
+    output_one_hot_encoded_dir_path = os.path.join(output_dir_path, DIR_ONE_HOT_ENCODED)
+    output_values_converted_dir_path = os.path.join(output_dir_path, DIR_VALUES_CONVERTED)
     input_dir_path = output_one_hot_encoded_dir_path
 
     print("\n--------------------------------4. VALUE CONVERSION-----------------------------------\n")
@@ -478,7 +484,7 @@ def convert_values(root_data_dir_path, read_csv_filter, holdout_label):
             scale_df["episode_date"] = abs(scale_df["episode_date"]) 
 
         output_file_name = VALUES_CONVERTED_PREFIX + scale_name
-        scale_df.to_csv(output_values_converted_dir_path + output_file_name + CSV_SUFFIX, index=False)
+        scale_df.to_csv(os.path.join(output_values_converted_dir_path, output_file_name + CSV_SUFFIX), index=False)
 
 def handle_replace_if_row_null(df, col_name):
     """
@@ -493,11 +499,11 @@ def handle_replace_if_row_null(df, col_name):
             df.at[i, col_name] = 0
     return df
 
-def aggregate_rows(root_data_dir_path, read_csv_filter, holdout_label='all'):
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
-    output_values_converted_dir_path = output_dir_path + "/" + DIR_VALUES_CONVERTED + "/"
-    output_aggregated_rows_dir_path = output_dir_path + "/" + DIR_AGGREGATED_ROWS + "/"
 
+def aggregate_rows(root_data_dir_path, read_csv_filter, holdout_label='all'):
+    output_dir_path = os.path.join(root_data_dir_path, DIR_PROCESSED_DATA, holdout_label)
+    output_aggregated_rows_dir_path = os.path.join(output_dir_path, DIR_AGGREGATED_ROWS)
+    output_values_converted_dir_path = os.path.join(output_dir_path, DIR_VALUES_CONVERTED)
     input_dir_path = output_values_converted_dir_path
 
     print("\n--------------------------------5. ROW AGGREGATION-----------------------------------\n")
@@ -550,14 +556,14 @@ def aggregate_rows(root_data_dir_path, read_csv_filter, holdout_label='all'):
 
     output_file_name = AGGREGATED_ROWS_PREFIX + "stard_data_matrix"
     aggregated_df = aggregated_df.reindex(columns=(main_keys + list([a for a in aggregated_df.columns if a not in main_keys])))
-    aggregated_df.to_csv(output_aggregated_rows_dir_path + output_file_name + CSV_SUFFIX, index=False)
+    aggregated_df.to_csv(os.path.join(output_aggregated_rows_dir_path, output_file_name + CSV_SUFFIX), index=False)
+
 
 def impute(root_data_dir_path, read_csv_filter, holdout_label='all'):
     warnings.filterwarnings("ignore", category=FutureWarning)
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
-    output_aggregated_rows_dir_path = output_dir_path + "/" + DIR_AGGREGATED_ROWS + "/"
-    output_imputed_dir_path = output_dir_path + "/" + DIR_IMPUTED + "/"
-
+    output_dir_path = os.path.join(root_data_dir_path, DIR_PROCESSED_DATA, holdout_label)
+    output_aggregated_rows_dir_path = os.path.join(output_dir_path, DIR_AGGREGATED_ROWS)
+    output_imputed_dir_path = os.path.join(output_dir_path, DIR_IMPUTED)
     # The input directory path will be that from the previous step (#5), row aggregation.
     input_dir_path = output_aggregated_rows_dir_path
 
@@ -732,7 +738,7 @@ def impute(root_data_dir_path, read_csv_filter, holdout_label='all'):
         final_data_matrix = agg_df
 
     output_file_name = IMPUTED_PREFIX + "stard_data_matrix"
-    output_path = output_imputed_dir_path + output_file_name + CSV_SUFFIX
+    output_path = os.path.join(output_imputed_dir_path, output_file_name + CSV_SUFFIX)
     final_data_matrix.to_csv(output_path, index=False)
     print("File has been written to:", output_path)
 
@@ -814,9 +820,10 @@ def one_hot_encode(df, columns):
 def drop_empty_columns(df):
     return df.dropna(axis="columns", how="all")  # Drop columns that are all empty
 
+
 def generate_y(root_data_dir_path, read_csv_filter, holdout_label='all'):
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
-    output_y_dir_path = output_dir_path + "/" + DIR_Y_MATRIX + "/"
+    output_dir_path = os.path.join(root_data_dir_path, DIR_PROCESSED_DATA, holdout_label)
+    output_y_dir_path = os.path.join(output_dir_path, DIR_Y_MATRIX)
 
     print("\n--------------------------------7. Y MATRIX GENERATION-----------------------------------\n")
     y_wk8_rem_qids_c = pd.DataFrame()
@@ -1016,26 +1023,26 @@ def generate_y(root_data_dir_path, read_csv_filter, holdout_label='all'):
 
                     i += 1
             
-    y_nolvl1drop_trdrem_qids01_c.to_csv(output_y_dir_path + "y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX, index=False)
-    y_nolvl1drop_trdrem_qids01_sr.to_csv(output_y_dir_path + "y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX, index=False)
+    y_nolvl1drop_trdrem_qids01_c.to_csv(os.path.join(output_y_dir_path, "y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX), index=False)
+    y_nolvl1drop_trdrem_qids01_sr.to_csv(os.path.join(output_y_dir_path, "y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX), index=False)
 
-    y_wk8_resp_qids_c.to_csv(output_y_dir_path + "y_wk8_resp_qids_c" + CSV_SUFFIX, index=False)
-    y_wk8_resp_qids_sr.to_csv(output_y_dir_path + "y_wk8_resp_qids_sr" + CSV_SUFFIX, index=False)
+    y_wk8_resp_qids_c.to_csv(os.path.join(output_y_dir_path, "y_wk8_resp_qids_c" + CSV_SUFFIX), index=False)
+    y_wk8_resp_qids_sr.to_csv(os.path.join(output_y_dir_path, "y_wk8_resp_qids_sr" + CSV_SUFFIX), index=False)
     
-    y_wk8_rem_qids_c.to_csv(output_y_dir_path + "y_wk8_rem_qids_c" + CSV_SUFFIX, index=False)
-    y_wk8_rem_qids_sr.to_csv(output_y_dir_path + "y_wk8_rem_qids_sr" + CSV_SUFFIX, index=False)
+    y_wk8_rem_qids_c.to_csv(os.path.join(output_y_dir_path, "y_wk8_rem_qids_c" + CSV_SUFFIX), index=False)
+    y_wk8_rem_qids_sr.to_csv(os.path.join(output_y_dir_path, "y_wk8_rem_qids_sr" + CSV_SUFFIX), index=False)
 
     print("Y output files have  been written to:", output_y_dir_path)
 
 
 def select_subjects(root_data_dir_path, read_csv_filter, holdout_label='all'):
-    output_dir_path = root_data_dir_path + "/" + DIR_PROCESSED_DATA + holdout_label
-    output_subject_selected_path = output_dir_path + "/" + DIR_SUBJECT_SELECTED + "/"
+    output_dir_path = os.path.join(root_data_dir_path, DIR_PROCESSED_DATA, holdout_label)
+    input_imputed_dir_path = os.path.join(output_dir_path, DIR_IMPUTED)
+    input_y_generation_dir_path = os.path.join(output_dir_path, DIR_Y_MATRIX)
+    input_row_selected_dir_path = os.path.join(output_dir_path, DIR_ROW_SELECTED)
+    output_subject_selected_path = os.path.join(output_dir_path, DIR_SUBJECT_SELECTED)
 
-    input_imputed_dir_path = output_dir_path + "/" + DIR_IMPUTED + "/"
-    input_y_generation_dir_path = output_dir_path + "/" + DIR_Y_MATRIX + "/"
-    input_row_selected_dir_path = output_dir_path + "/" + DIR_ROW_SELECTED + "/"
-
+    output_imputed_dir_path = os.path.join(output_dir_path, DIR_IMPUTED)
     print("\n--------------------------------8. SUBJECT SELECTION-----------------------------------\n")
 
     if not os.path.exists(output_dir_path):
@@ -1043,7 +1050,7 @@ def select_subjects(root_data_dir_path, read_csv_filter, holdout_label='all'):
     if not os.path.exists(output_subject_selected_path):
         os.mkdir(output_subject_selected_path)
 
-    orig_data_matrix = read_csv_filter(input_imputed_dir_path + "/rs__cs__ohe__vc__ag__im__stard_data_matrix.csv")
+    orig_data_matrix = read_csv_filter(os.path.join(input_imputed_dir_path, "rs__cs__ohe__vc__ag__im__stard_data_matrix.csv"))
 
     # New final X matrices
     X_nolvl1drop_qids_c = orig_data_matrix
@@ -1053,10 +1060,10 @@ def select_subjects(root_data_dir_path, read_csv_filter, holdout_label='all'):
     
     # Select subjects from imputed (aggregated) data based on the y matrices
 
-    ### Handle the TRD stuff
+    # Handle the TRD stuff
     
-    y_nolvl1drop_trdrem_qids01_c = read_csv_filter(input_y_generation_dir_path + "/y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX)
-    y_nolvl1drop_trdrem_qids01_sr = read_csv_filter(input_y_generation_dir_path + "/y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX)
+    y_nolvl1drop_trdrem_qids01_c = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX))
+    y_nolvl1drop_trdrem_qids01_sr = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX))
 
     X_nolvl1drop_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_c, y_nolvl1drop_trdrem_qids01_c, 'c', read_csv_filter)
     X_nolvl1drop_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_sr, y_nolvl1drop_trdrem_qids01_sr, 'sr', read_csv_filter)
@@ -1066,19 +1073,18 @@ def select_subjects(root_data_dir_path, read_csv_filter, holdout_label='all'):
     y_nolvl1drop_trdrem_qids01_sr__final = y_nolvl1drop_trdrem_qids01_sr[y_nolvl1drop_trdrem_qids01_sr.subjectkey.isin(X_nolvl1drop_qids_sr__final.subjectkey)]
 
     # Handle the week8 response stuff
-    y_wk8_resp_qids_c = read_csv_filter(input_y_generation_dir_path + "/y_wk8_resp_qids_c" + CSV_SUFFIX)
-    y_wk8_resp_qids_sr = read_csv_filter(input_y_generation_dir_path + "/y_wk8_resp_qids_sr" + CSV_SUFFIX)
+    y_wk8_resp_qids_c = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_wk8_resp_qids_c" + CSV_SUFFIX))
+    y_wk8_resp_qids_sr = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_wk8_resp_qids_sr" + CSV_SUFFIX))
 
     # Handle the week8 remission stuff
-    y_wk8_rem_qids_c = read_csv_filter(input_y_generation_dir_path + "/y_wk8_rem_qids_c" + CSV_SUFFIX)
-    y_wk8_rem_qids_sr = read_csv_filter(input_y_generation_dir_path + "/y_wk8_rem_qids_sr" + CSV_SUFFIX)
+    y_wk8_rem_qids_c = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_wk8_rem_qids_c" + CSV_SUFFIX))
+    y_wk8_rem_qids_sr = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_wk8_rem_qids_sr" + CSV_SUFFIX))
 
     # Handle the X matrices of subjects who stayed until week 4
     # These use one of the y's, but it doesn't matter as only uses for subject selection which is same between those y matrices
     X_tillwk4_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_tillwk4_qids_c, y_wk8_rem_qids_c, 'c', read_csv_filter)
     X_tillwk4_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_tillwk4_qids_sr, y_wk8_rem_qids_sr, 'sr', read_csv_filter)
 
-    
     # Subset the y matrices so that they matches the X matrices
     y_wk8_resp_qids_c__final = y_wk8_resp_qids_c[y_wk8_resp_qids_c.subjectkey.isin(X_tillwk4_qids_c__final.subjectkey)]
     y_wk8_resp_qids_sr__final = y_wk8_resp_qids_sr[y_wk8_resp_qids_sr.subjectkey.isin(X_tillwk4_qids_sr__final.subjectkey)]
@@ -1102,26 +1108,23 @@ def select_subjects(root_data_dir_path, read_csv_filter, holdout_label='all'):
     # Make two new y matrices to evaluate performance if a different inclusion is used
     y_wk8_resp_qids_sr_nolvl1drop = y_wk8_resp_qids_sr__final[y_wk8_resp_qids_sr__final.subjectkey.isin(X_nolvl1drop_qids_sr__final.subjectkey)]
     y_wk8_resp_qids_c_nolvl1drop = y_wk8_resp_qids_c__final[y_wk8_resp_qids_c__final.subjectkey.isin(X_nolvl1drop_qids_c__final.subjectkey)]
-    
-
-    
 
     # Output X matrices to CSV
-    X_nolvl1drop_qids_c__final.to_csv(output_subject_selected_path + "X_nolvl1drop_qids_c_" + holdout_label + + CSV_SUFFIX, index=False)
-    X_nolvl1drop_qids_sr__final.to_csv(output_subject_selected_path + "X_nolvl1drop_qids_sr_" + holdout_label + + CSV_SUFFIX, index=False)
-    X_tillwk4_qids_c__final.to_csv(output_subject_selected_path + "X_tillwk4_qids_c_" + holdout_label + + CSV_SUFFIX, index=False)
-    X_tillwk4_qids_sr__final.to_csv(output_subject_selected_path + "X_tillwk4_qids_sr_" + holdout_label + + CSV_SUFFIX, index=False)
+    X_nolvl1drop_qids_c__final.to_csv(os.path.join(output_subject_selected_path, "X_nolvl1drop_qids_c_" + holdout_label + CSV_SUFFIX), index=False)
+    X_nolvl1drop_qids_sr__final.to_csv(os.path.join(output_subject_selected_path, "X_nolvl1drop_qids_sr_" + holdout_label + CSV_SUFFIX), index=False)
+    X_tillwk4_qids_c__final.to_csv(os.path.join(output_subject_selected_path, "X_tillwk4_qids_c_" + holdout_label + CSV_SUFFIX), index=False)
+    X_tillwk4_qids_sr__final.to_csv(os.path.join(output_subject_selected_path, "X_tillwk4_qids_sr_" + holdout_label + CSV_SUFFIX), index=False)
 
     # Output y matrices to CSV
-    y_nolvl1drop_trdrem_qids01_c__final.to_csv(output_subject_selected_path + "y_nolvl1drop_trdrem_qids_c_" + holdout_label + CSV_SUFFIX, index=False)
-    y_nolvl1drop_trdrem_qids01_sr__final.to_csv(output_subject_selected_path + "y_nolvl1drop_trdrem_qids_sr_" + holdout_label + CSV_SUFFIX, index=False)
-    y_wk8_resp_qids_c__final.to_csv(output_subject_selected_path + "y_wk8_resp_qids_c_" + holdout_label + CSV_SUFFIX, index=False)
-    y_wk8_resp_qids_sr__final.to_csv(output_subject_selected_path + "y_wk8_resp_qids_sr_" + holdout_label + CSV_SUFFIX, index=False)
-    y_wk8_rem_qids_c__final.to_csv(output_subject_selected_path + "y_wk8_rem_qids_c_" + holdout_label + CSV_SUFFIX, index=False)
-    y_wk8_rem_qids_sr__final.to_csv(output_subject_selected_path + "y_wk8_rem_qids_sr_" + holdout_label + CSV_SUFFIX, index=False)
+    y_nolvl1drop_trdrem_qids01_c__final.to_csv(os.path.join(output_subject_selected_path, "y_nolvl1drop_trdrem_qids_c_" + holdout_label + CSV_SUFFIX), index=False)
+    y_nolvl1drop_trdrem_qids01_sr__final.to_csv(os.path.join(output_subject_selected_path, "y_nolvl1drop_trdrem_qids_sr_" + holdout_label + CSV_SUFFIX), index=False)
+    y_wk8_resp_qids_c__final.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_c_" + holdout_label + CSV_SUFFIX), index=False)
+    y_wk8_resp_qids_sr__final.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_sr_" + holdout_label + CSV_SUFFIX), index=False)
+    y_wk8_rem_qids_c__final.to_csv(os.path.join(output_subject_selected_path, "y_wk8_rem_qids_c_" + holdout_label + CSV_SUFFIX), index=False)
+    y_wk8_rem_qids_sr__final.to_csv(os.path.join(output_subject_selected_path, "y_wk8_rem_qids_sr_" + holdout_label + CSV_SUFFIX), index=False)
 
-    y_wk8_resp_qids_sr_nolvl1drop.to_csv(output_subject_selected_path + "y_wk8_resp_qids_sr_nolvl1drop" + CSV_SUFFIX, index=False)
-    y_wk8_resp_qids_c_nolvl1drop.to_csv(output_subject_selected_path + "y_wk8_resp_qids_c_nolvl1drop" + CSV_SUFFIX, index=False)
+    y_wk8_resp_qids_sr_nolvl1drop.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_sr_nolvl1drop" + CSV_SUFFIX), index=False)
+    y_wk8_resp_qids_c_nolvl1drop.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_c_nolvl1drop" + CSV_SUFFIX), index=False)
     
     print("Files written to: ", output_subject_selected_path)
 

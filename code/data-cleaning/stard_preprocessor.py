@@ -1,6 +1,11 @@
 import sys
 import os
 import pandas as pd
+from stard_preprocessing_globals import COL_NAME_SUBJECTKEY
+from sklearn.model_selection import train_test_split
+from stard_preprocessing_manager import select_rows, select_columns, one_hot_encode_scales, convert_values, \
+    aggregate_rows, impute, generate_y, select_subjects
+
 """
 This is our preprocess for the raw STAR*D data from the NIMH, producing the 
 preprocessed STAR*D data, which can be used for ML or further processed into
@@ -16,29 +21,37 @@ Takes 2 Arguments on command-line:
     preprocessing to be ran at a time. Use "--run-all" or "-a" to 
     do the entire preprocessing. 
 
-Example Run configuration:
-runfile('C:/Users/jjnun/Documents/Sync/Research/1_CANBIND_Replication/teyden-git/code/data-cleaning/stard_preprocessing_manager.py', args='C:/Users/jjnun/Documents/Sync/Research/1_CANBIND_Replication/teyden-git/data/stard_data -a', wdir='C:/Users/jjnun/Documents/Sync/Research/1_CANBIND_Replication/teyden-git/code/data-cleaning')
-
+Example terminal command:
 """
-from stard_preprocessing_manager import select_rows, select_columns, one_hot_encode_scales, convert_values, \
-    aggregate_rows, impute, generate_y, select_subjects
+# python stard_preprocessor.py C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\teyden-git\data\stard_data -a
 
 
-def create_read_csv_filter(holdout_label, data_dir_path):
+
+
+def separate_holdout_ids(data_dir):
+    qids_df = pd.read_csv(os.path.join(data_dir, 'qids01.txt'), sep='\t', skiprows=[1])
+    qids_subj_ids = qids_df[COL_NAME_SUBJECTKEY].unique().tolist()  # Get set of all subject ids
+
+    split_holdout_ids, split_non_holdout_ids = train_test_split(qids_subj_ids, test_size=0.20, random_state=5)
+    print(f'Number of subjects in each set {len(qids_subj_ids)}, {len(split_holdout_ids)}, {len(split_non_holdout_ids)}')
+    return qids_subj_ids, split_holdout_ids, split_non_holdout_ids
+
+
+def create_read_csv_filter(set_filtered_ids):
     """
     Creates a function which calls read_csv, and then filters the ensuing subject rows to match the holdout filter.
-    :param data_dir_path: path where the raw STAR*D data is located
-    :param holdout_label: string, either holdout, non_holdout, or all
+    :param set_filtered_ids: list of ids that are in this holdout, non_holdout, or all set
+    #:param holdout_label: string, either holdout, non_holdout, or all
     :return: a function as above
     """
 
-    def read_csv_filter(f, *args, **kwargs):
+    def a_read_csv_filter(f, *args, **kwargs):
         df = pd.read_csv(f, *args, **kwargs)
-        # TODO: create actual filter lol.
+        df[df[COL_NAME_SUBJECTKEY].isin(set_filtered_ids)]  # Only keep in data from this set
         filtered_df = df
         return filtered_df
 
-    return read_csv_filter
+    return a_read_csv_filter
 
 
 if __name__ == "__main__":
@@ -46,8 +59,10 @@ if __name__ == "__main__":
     option = sys.argv[2]
     is_valid = len(sys.argv) == 3 and os.path.isdir(data_dir_path)
 
-    for holdout_label in ['holdout', 'non_holdout', 'all']:
-        read_csv_filter = create_read_csv_filter(holdout_label, data_dir_path)
+    all_ids, holdout_ids, non_holdout_ids = separate_holdout_ids(data_dir_path)
+
+    for holdout_label, filtered_ids in zip(['holdout', 'non_holdout', 'all'], [all_ids, holdout_ids, non_holdout_ids]):
+        read_csv_filter = create_read_csv_filter(filtered_ids)
 
         if is_valid and option in ["--row-select", "-rs"]:
             select_rows(data_dir_path, read_csv_filter, holdout_label)
