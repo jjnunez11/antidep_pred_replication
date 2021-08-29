@@ -78,8 +78,8 @@ def RunResult(runs, evl, model, f_select, data_name, label_name, table=""):
     std_impts = np.std(impts, axis=0)
 
     if evl == "cv":
-        data_path = os.path.join(DATA_DIR, data_name + "non_holdout.csv")
-        label_path = os.path.join(DATA_DIR, label_name + "non_holdout.csv")
+        data_path = os.path.join(DATA_DIR, data_name + "_non_holdout.csv")
+        label_path = os.path.join(DATA_DIR, label_name + "_non_holdout.csv")
     else:
         data_path = os.path.join(DATA_DIR, data_name + ".csv")
         label_path = os.path.join(DATA_DIR, label_name + ".csv")

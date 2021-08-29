@@ -13,6 +13,7 @@ import xgboost as xgb
 from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import KFold
 import numpy as np
+import pandas as pd
 from run_globals import DATA_DIR
 import os
 
@@ -23,9 +24,13 @@ def RunMLRun(data_name, label_name, f_select, model, evl, ensemble_n=30, n_split
     """
     if evl == "cv":
         test_data = os.path.join(DATA_DIR, data_name + "_holdout.csv")
-        test_label = os.path.koin(DATA_DIR, label_name + "_holdout.csv")
+        test_label = os.path.join(DATA_DIR, label_name + "_holdout.csv")
+        train_data = os.path.join(DATA_DIR, data_name + "_non_holdout.csv")
+        train_label = os.path.join(DATA_DIR, label_name + "_non_holdout.csv")
     else:
         test_data = os.path.join(DATA_DIR, 'canbind_X_overlap_tillwk4_qids_sr.csv')  # X data matrix over CAN-BIND, only overlapping features with STAR*D, subjects who have qids sr until at least week 4
+        train_data = os.path.join(DATA_DIR, data_name + "_entire.csv")
+        train_label = os.path.join(DATA_DIR, label_name + "_entire.csv")
         if evl == "extval_resp":
             test_label = os.path.join(DATA_DIR, 'canbind_y_tillwk8_resp_qids_sr.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr response
         elif evl == "extval_rem":
@@ -37,15 +42,15 @@ def RunMLRun(data_name, label_name, f_select, model, evl, ensemble_n=30, n_split
     X_test = np.genfromtxt(test_data, delimiter=',')[1:,1:]
     y_test = np.genfromtxt(test_label, delimiter=',')[1:,1]
     
-    X = np.genfromtxt(data_name, delimiter=',')
-    y = np.genfromtxt(label_name, delimiter=',')[1:, 1]
+    X = np.genfromtxt(train_data, delimiter=',')
+    y = np.genfromtxt(train_label, delimiter=',')[1:, 1]
     X = X[1:,1:]
     
     n,m = X.shape
     kf = KFold(n_splits, shuffle=True)
 
     # Assert columns are same between X and X_test
-    assert ((X.columns == X_test.columns).all(), "Columns must be same and in same order between X and X_test")
+    assert (pd.read_csv(train_data).columns == pd.read_csv(test_data).columns).all(), "Columns must be same and in same order between X and X_test"
 
 
     j=1
