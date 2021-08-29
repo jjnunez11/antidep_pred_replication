@@ -36,30 +36,6 @@ def separate_holdout_ids(data_dir):
     print(f'Number of subjects in each set {len(qids_subj_ids)}, {len(split_holdout_ids)}, {len(split_non_holdout_ids)}')
     return qids_subj_ids, split_non_holdout_ids, split_holdout_ids
 
-
-def create_read_csv_filter(set_filtered_ids):
-    """
-    Creates a function which calls read_csv, and then filters the ensuing subject rows to match the holdout filter.
-    :param set_filtered_ids: list of ids that are in this holdout, non_holdout, or all set
-    #:param holdout_label: string, either holdout, non_holdout, or all
-    :return: a function as above
-    """
-
-    def a_read_csv_filter(f, **kwargs):
-        df = pd.read_csv(f, **kwargs)
-        print(f'At read, we have {len(df.columns)} columns')
-        #print(f'BF: {df.columns}')
-        filtered_df = df[df[COL_NAME_SUBJECTKEY].isin(set_filtered_ids)]  # Only keep in data from this set
-        print(f'After filter, we have {len(filtered_df.columns)} columns')
-        #print(f'AF: {df.columns}')
-        assert (df.columns == filtered_df.columns).all(), "This should not remove columns lol"
-
-        return filtered_df
-
-    return a_read_csv_filter
-    #return pd.read_csv
-
-
 if __name__ == "__main__":
     data_dir_path = sys.argv[1]
     option = sys.argv[2]
@@ -88,41 +64,41 @@ if __name__ == "__main__":
                         "\t e.g. python stard_preprocessing_manager.py /Users/teyden/Downloads/stardmarch19v3 -a -all")
 
     for holdout_label, filtered_ids in zip(ho_labels, ho_filters):
-        read_csv_filter = create_read_csv_filter(filtered_ids)
+        #read_csv_filter = create_read_csv_filter(filtered_ids)
 
         if is_valid and option in ["--row-select", "-rs"]:
-            select_rows(data_dir_path, read_csv_filter, holdout_label)
+            select_rows(data_dir_path, filtered_ids, holdout_label)
 
         elif is_valid and option in ["--column-select", "-cs"]:
-            select_columns(data_dir_path, read_csv_filter, holdout_label)
+            select_columns(data_dir_path,  holdout_label)
 
         elif is_valid and option in ["--one-hot-encode", "-ohe"]:
-            one_hot_encode_scales(data_dir_path, read_csv_filter, holdout_label)
+            one_hot_encode_scales(data_dir_path,  holdout_label)
 
         elif is_valid and option in ["--value-convert", "-vc"]:
-            convert_values(data_dir_path, read_csv_filter, holdout_label)
+            convert_values(data_dir_path,  holdout_label)
 
         elif is_valid and option in ["--aggregate-rows", "-ag"]:
-            aggregate_rows(data_dir_path, read_csv_filter, holdout_label)
+            aggregate_rows(data_dir_path,  holdout_label)
 
         elif is_valid and option in ["--impute", "-im"]:
-            impute(data_dir_path, read_csv_filter, holdout_label)
+            impute(data_dir_path,  holdout_label)
 
         elif is_valid and option in ["--y-generation", "-y"]:
-            generate_y(data_dir_path, read_csv_filter, holdout_label)
+            generate_y(data_dir_path, filtered_ids, holdout_label)
 
         elif is_valid and option in ["--subject-select", "-ss"]:
-            select_subjects(data_dir_path, read_csv_filter, holdout_label)
+            select_subjects(data_dir_path,  holdout_label)
 
         elif is_valid and option in ["--run-all", "-a"]:
-            select_rows(data_dir_path, read_csv_filter, holdout_label)
-            select_columns(data_dir_path, read_csv_filter, holdout_label)
-            one_hot_encode_scales(data_dir_path, read_csv_filter, holdout_label)
-            convert_values(data_dir_path, read_csv_filter, holdout_label)
-            aggregate_rows(data_dir_path, read_csv_filter, holdout_label)
-            impute(data_dir_path, read_csv_filter, holdout_label)
-            generate_y(data_dir_path, read_csv_filter, holdout_label)
-            select_subjects(data_dir_path, read_csv_filter, holdout_label)
+            select_rows(data_dir_path, filtered_ids,  holdout_label)
+            select_columns(data_dir_path,  holdout_label)
+            one_hot_encode_scales(data_dir_path,  holdout_label)
+            convert_values(data_dir_path,  holdout_label)
+            aggregate_rows(data_dir_path,  holdout_label)
+            impute(data_dir_path,  holdout_label)
+            generate_y(data_dir_path, filtered_ids, holdout_label)
+            select_subjects(data_dir_path,  holdout_label)
 
             print("\nSteps complete:\n" +
                   "\t Row selection\n" +
