@@ -56,20 +56,21 @@ def RunMLRun(pathData, pathLabel, f_select, model, evl, ensemble_n=30, n_splits=
     fps = np.empty([10,], dtype=float)
     tns = np.empty([10,], dtype=float)
     fns = np.empty([10,], dtype=float)
-    feature_importances =  np.empty([10,m], dtype=float) #Store feature importances relative to the original ordering.
+    feature_importances =  np.empty([10,m], dtype=float)  # Store feature importances relative to the original ordering.
     clfs = [None]*n_splits
         
     for train_index, test_index in kf.split(X):
         print("Fold:", j)
-        
-        if evl == 'cv':
-            X_train, X_test = X[train_index], X[test_index]
-            y_train, y_test = y[train_index], y[test_index]
-        elif evl == 'extval_resp' or evl == 'extval_rem' or 'extval_rem_randomized':
-            X_train, _ = X[train_index], X[test_index]
-            y_train, _ = y[train_index], y[test_index]
-        else:
-            Exception("Invalid evaluation type provided, must be cv or extval")
+
+        X_train, _ = X[train_index], X[test_index]
+        y_train, _ = y[train_index], y[test_index]
+
+        # If you want training cross-validation results, use this, and then seperate below so you're holding both
+        # holdout set results and cv results
+        # if evl == 'cv': X_train, X_test = X[train_index], X[test_index]
+        # y_train, y_test = y[train_index], y[test_index] elif evl == 'extval_resp' or evl == 'extval_rem' or 'extval_rem_randomized':
+        # X_train, _ = X[train_index], X[test_index] y_train, _ = y[train_index], y[test_index]
+        # else: Exception("Invalid evaluation type provided, must be cv or extval")
 
         # Feature selection
         if f_select == "chi":
@@ -154,7 +155,7 @@ def RunMLRun(pathData, pathLabel, f_select, model, evl, ensemble_n=30, n_splits=
         # Store performance metrics accuracy and draw ROC curve
         auc[j-1] = drawROC(y_test, y_score)
         bscore[j-1] = balanced_accuracy_score(y_test, pred)
-        tn, fp, fn, tp = confusion_matrix(y_test,pred).ravel()
+        tn, fp, fn, tp = confusion_matrix(y_test, pred).ravel()
         specificity[j-1] = tn/(tn+fp)
         sensitivity[j-1] = tp/(tp+fn)
         precision[j-1] = tp/(tp+fp)

@@ -19,7 +19,7 @@ if __name__ == "__main__":
         X_matrix = "X_nolvl1drop_qids_c" # STAR*D full feature data matrix, with subjects who do not drop in level according to having QIDS-C scores
         y_labels = "y_nolvl1drop_trdrem_qids_c"# STAR*D targets for QIDS-C TRD as defined by remission, for subjects who do not drop in level 1 according to having QIDS-C scores
         
-        for model in ['rf','gbdt', "xgbt", "l2logreg"]:
+        for model in ['rf', 'gbdt', "xgbt", "l2logreg"]:
             for f_select in ["all", "chi", "elas"]: 
                 RunResult(runs, "cv", model, f_select, X_matrix, y_labels, table)
         RunResult(runs, "cv", 'elnet', 'all', X_matrix, y_labels, table)
