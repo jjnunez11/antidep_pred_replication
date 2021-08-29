@@ -47,7 +47,13 @@ def create_read_csv_filter(set_filtered_ids):
 
     def a_read_csv_filter(f, **kwargs):
         df = pd.read_csv(f, **kwargs)
+        print(f'At read, we have {len(df.columns)} columns')
+        #print(f'BF: {df.columns}')
         filtered_df = df[df[COL_NAME_SUBJECTKEY].isin(set_filtered_ids)]  # Only keep in data from this set
+        print(f'After filter, we have {len(filtered_df.columns)} columns')
+        #print(f'AF: {df.columns}')
+        assert (df.columns == filtered_df.columns).all(), "This should not remove columns lol"
+
         return filtered_df
 
     return a_read_csv_filter

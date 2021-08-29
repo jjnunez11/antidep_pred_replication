@@ -76,6 +76,7 @@ def select_rows(input_dir_path, read_csv_filter, holdout_label='all'):
         selection_criteria = ORIGINAL_SCALE_NAMES[scale_name]
 
         if scale_name in ["ccv01"]:
+            # print(f'{len(scale_df.columns)} columns THESE ARE THE COLUMNS IN CCV: {scale_df.columns}')
             if scale_df["week"].isnull().values.any():
                 raise Exception("Numerical column should not contain any null values.")
 
