@@ -3,12 +3,9 @@ import sys
 import pandas as pd
 import numpy as np
 from collections import namedtuple
-
 import warnings
-
-#from utils import *
 from stard_preprocessing_globals import ORIGINAL_SCALE_NAMES, BLACK_LIST_SCALES, SCALES, VALUE_CONVERSION_MAP, \
-    VALUE_CONVERSION_MAP_IMPUTE, NEW_FEATURES
+    VALUE_CONVERSION_MAP_IMPUTE, NEW_FEATURES, COL_NAME_SUBJECTKEY
 
 """ 
 This is the main code for our preprocess for the raw STAR*D data from the NIMH, producing the 
@@ -69,6 +66,8 @@ def select_rows(input_dir_path, holdout_set_ids, holdout_label='all'):
         # Read in the txt file + preliminary processing
         scale_df = pd.read_csv(curr_scale_path, sep='\t', skiprows=[1])  # TODO: Replace
         scale_df = drop_empty_columns(scale_df)
+        # Drop empty columns only when checking the entire set, or will end up with different columns in holdout_set etc
+        scale_df = scale_df[scale_df[COL_NAME_SUBJECTKEY].isin(holdout_set_ids)]  # Only keep in data from this set
 
         print(LINE_BREAK)
         print("Handling scale = ", scale_name)
@@ -419,7 +418,7 @@ def one_hot_encode_scales(root_data_dir_path,  holdout_label='all'):
             scale_df = one_hot_encode(scale_df, cols_to_one_hot_encode)
             scale_df = scale_df.drop(columns=cols_to_one_hot_encode)
 
-        # When making a holdout set, some rare entires may not exist post one-hot, so check and add them if needed to
+        #When making a holdout set, some rare entires may not exist post one-hot, so check and add them if needed to
         # match the non-holdout set etc.
         if scale_name == "dm01_enroll":
             for rare_col in ['resid||7.0', 'resid||6.0']:
@@ -576,7 +575,7 @@ def aggregate_rows(root_data_dir_path,  holdout_label='all'):
     aggregated_df.to_csv(os.path.join(output_aggregated_rows_dir_path, output_file_name + CSV_SUFFIX), index=False)
 
 
-def impute(root_data_dir_path,  holdout_label='all'):
+def impute(root_data_dir_path, holdout_set_ids, holdout_label='all'):
     warnings.filterwarnings("ignore", category=FutureWarning)
     output_dir_path = os.path.join(root_data_dir_path, DIR_PROCESSED_DATA, holdout_label)
     output_aggregated_rows_dir_path = os.path.join(output_dir_path, DIR_AGGREGATED_ROWS)
@@ -617,7 +616,9 @@ def impute(root_data_dir_path,  holdout_label='all'):
         agg_df = replace(agg_df, list(blank_to_one_config["col_names"]), blank_to_one_config["conversion_map"])
         agg_df = replace(agg_df, list(blank_to_twenty_config["col_names"]), blank_to_twenty_config["conversion_map"])
 
-        crs01_df = pd.read_csv(root_data_dir_path + "/crs01.txt", sep="\t", skiprows=[1]) #TODO: REPLACE
+        crs01_df = pd.read_csv(root_data_dir_path + "/crs01.txt", sep="\t", skiprows=[1]) #TODO: REPLACED
+        crs01_df = crs01_df[crs01_df[COL_NAME_SUBJECTKEY].isin(holdout_set_ids)]  # Only keep in data from this set
+
         crs01_df.loc[:, "interview_age"] = crs01_df["interview_age"].astype("float")
 
         for new_feature in NEW_FEATURES:
@@ -874,7 +875,9 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
         curr_scale_path = root_data_dir_path + "/" + filename
 
         # Read in the txt file + preliminary processing
-        scale_df = pd.read_csv(curr_scale_path, sep='\t', skiprows=[1]) #TODO: Replace
+        scale_df = pd.read_csv(curr_scale_path, sep='\t', skiprows=[1]) #TODO: Replaced
+        scale_df = scale_df[scale_df[COL_NAME_SUBJECTKEY].isin(holdout_set_ids)]  # Only keep in data from this set
+
 
         print(LINE_BREAK)
         print("Handling scale = ", scale_name)
@@ -1172,7 +1175,7 @@ def handle_subject_selection_conditions(input_row_selected_dir_path, X, y_df, qi
     X = X[X["subjectkey"].isin(file_ucq["subjectkey"])]
     
     # Eliminate subjects that don't have week0 QIDS entries from either QIDS-C or QIDS-SR
-    file_qids01_w0c = pd.read_Csv(input_row_selected_dir_path + "/rs__qids01_w0" + qids_version + CSV_SUFFIX)
+    file_qids01_w0c = pd.read_csv(input_row_selected_dir_path + "/rs__qids01_w0" + qids_version + CSV_SUFFIX)
     X = X[X["subjectkey"].isin(file_qids01_w0c["subjectkey"])]
 
     return X

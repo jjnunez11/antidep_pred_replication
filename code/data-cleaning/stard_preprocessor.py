@@ -1,8 +1,8 @@
 import sys
 import os
 import pandas as pd
-from stard_preprocessing_globals import COL_NAME_SUBJECTKEY
 from sklearn.model_selection import train_test_split
+from stard_preprocessing_globals import COL_NAME_SUBJECTKEY
 from stard_preprocessing_manager import select_rows, select_columns, one_hot_encode_scales, convert_values, \
     aggregate_rows, impute, generate_y, select_subjects
 
@@ -82,7 +82,7 @@ if __name__ == "__main__":
             aggregate_rows(data_dir_path,  holdout_label)
 
         elif is_valid and option in ["--impute", "-im"]:
-            impute(data_dir_path,  holdout_label)
+            impute(data_dir_path, filtered_ids, holdout_label)
 
         elif is_valid and option in ["--y-generation", "-y"]:
             generate_y(data_dir_path, filtered_ids, holdout_label)
@@ -96,7 +96,7 @@ if __name__ == "__main__":
             one_hot_encode_scales(data_dir_path,  holdout_label)
             convert_values(data_dir_path,  holdout_label)
             aggregate_rows(data_dir_path,  holdout_label)
-            impute(data_dir_path,  holdout_label)
+            impute(data_dir_path, filtered_ids, holdout_label)
             generate_y(data_dir_path, filtered_ids, holdout_label)
             select_subjects(data_dir_path,  holdout_label)
 
