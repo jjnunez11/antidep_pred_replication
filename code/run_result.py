@@ -21,8 +21,7 @@ def RunResult(runs, evl, model,f_select, data, label, table=""):
     if not(os.path.exists(table_path)):
         os.mkdir(table_path)
     
-    data_path = os.path.join(DATA_DIR, data + ".csv")
-    label_path = os.path.join(DATA_DIR, label + ".csv")
+
     
     # Set n_splits, how many fold the cross-validation used for traiinng should be, as well as ensemble_n,
     # the number of models to train to use as an ensemble for prediction. Set to Nie et al's values.
@@ -52,7 +51,7 @@ def RunResult(runs, evl, model,f_select, data, label, table=""):
     
     for i in range(runs):
             
-            accus[i], bal_accus[i], aucs[i], senss[i], specs[i], precs[i], f1s[i], feats[i], impt, confus_mat, run_clfs = RunMLRun(data_path, label_path, f_select, model, evl, ensemble_n, n_splits)
+            accus[i], bal_accus[i], aucs[i], senss[i], specs[i], precs[i], f1s[i], feats[i], impt, confus_mat, run_clfs = RunMLRun(data, label, f_select, model, evl, ensemble_n, n_splits)
        
             tps[i] = confus_mat['tp']
             fps[i] = confus_mat['fp']
@@ -77,6 +76,13 @@ def RunResult(runs, evl, model,f_select, data, label, table=""):
     # Process feature importance
     avg_impts = np.mean(impts, axis=0)
     std_impts = np.std(impts, axis=0)
+
+    if evl == "cv":
+        data_path = os.path.join(DATA_DIR, data + "non_holdout.csv")
+        label_path = os.path.join(DATA_DIR, label + "non_holdout.csv")
+    else:
+        data_path = os.path.join(DATA_DIR, data + ".csv")
+        label_path = os.path.join(DATA_DIR, label + ".csv")
     
     sorted_features = np.argsort(avg_impts)[::-1]
     top_31_features = sorted_features[0:31] #In descending importance, first is most important

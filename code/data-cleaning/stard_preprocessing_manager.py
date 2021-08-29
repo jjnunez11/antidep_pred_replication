@@ -200,7 +200,7 @@ def select_rows(input_dir_path, read_csv_filter, holdout_label='all'):
     # Handle preqids, after looping through the original scales
     preqids_file_path = output_row_selected_dir_path + "prers__preqids01.csv"
     if os.path.exists(preqids_file_path):
-        scale_df = read_csv_filter(preqids_file_path)
+        scale_df = pd.read_csv(preqids_file_path)
         # scale_df = scale_df.drop(columns=["Unnamed: 0"])
 
         # Convert column to numeric type
@@ -318,7 +318,7 @@ def select_columns(root_data_dir_path, read_csv_filter, holdout_label='all'):
         print("Handling scale =", scale_name, ", filename =", filename)
 
         # Read in the txt file + preliminary processing
-        scale_df = read_csv_filter(curr_scale_path)
+        scale_df = pd.read_csv(curr_scale_path)
 
         # Drop empty columns
         scale_df = drop_empty_columns(scale_df)
@@ -364,7 +364,7 @@ def one_hot_encode_scales(root_data_dir_path, read_csv_filter, holdout_label='al
         print("Handling scale =", scale_name, ", filename =", filename)
 
         # Read in the txt file
-        scale_df = read_csv_filter(input_dir_path + "/" + filename)
+        scale_df = pd.read_csv(input_dir_path + "/" + filename)
 
         if scale_name == "dm01_enroll":
             cols_to_convert = ['empl', 'volun', 'leave', 'publica', 'medicaid', 'privins']
@@ -448,7 +448,7 @@ def convert_values(root_data_dir_path, read_csv_filter, holdout_label):
         print("Handling scale =", scale_name, ", filename =", filename)
 
         # Read in the txt file
-        scale_df = read_csv_filter(input_dir_path + "/" + filename)
+        scale_df = pd.read_csv(input_dir_path + "/" + filename)
 
         for col_name in scale_df.columns.values:
             for key, dict in VALUE_CONVERSION_MAP.items():
@@ -526,7 +526,7 @@ def aggregate_rows(root_data_dir_path, read_csv_filter, holdout_label='all'):
         print("Handling scale =", scale_name, ", filename =", filename)
 
         # Read in the txt file
-        scale_df = read_csv_filter(input_dir_path + "/" + filename)
+        scale_df = pd.read_csv(input_dir_path + "/" + filename)
 
         # Append scale name and version to the column name
         cols = {}
@@ -586,7 +586,7 @@ def impute(root_data_dir_path, read_csv_filter, holdout_label='all'):
         print("Handling full data matrix =", scale_name, ", filename =", filename)
 
         # Read in the txt file
-        agg_df = read_csv_filter(input_dir_path + "/" + filename)
+        agg_df = pd.read_csv(os.path.join(input_dir_path, filename))
 
         # Handle replace with mode or median
         agg_df = replace_with_median(agg_df, list(VALUE_CONVERSION_MAP_IMPUTE["blank_to_median"]["col_names"]))
@@ -797,7 +797,12 @@ def replace_with_median(df, col_names):
 
 def replace_with_mode(df, col_names):
     if set(col_names).issubset(df.columns):
+        print(col_names)
         df[col_names] = df[col_names].apply(lambda col: col.fillna(float(col.mode())), axis=0)
+        for col in col_names:
+            print(f'{col} is {df[col].dtype} and mode is {df[col].mode()}')
+            df[col] = df[col].fillna(float(df[col].mode()))
+            print(f'{col} imputed!')
         print("Imputed blanks with mode")
     else:
         raise Exception("Column names are not subset: {}".format(set(col_names).difference(df.columns)))
@@ -1050,7 +1055,7 @@ def select_subjects(root_data_dir_path, read_csv_filter, holdout_label='all'):
     if not os.path.exists(output_subject_selected_path):
         os.mkdir(output_subject_selected_path)
 
-    orig_data_matrix = read_csv_filter(os.path.join(input_imputed_dir_path, "rs__cs__ohe__vc__ag__im__stard_data_matrix.csv"))
+    orig_data_matrix = pd.read_csv(os.path.join(input_imputed_dir_path, "rs__cs__ohe__vc__ag__im__stard_data_matrix.csv"))
 
     # New final X matrices
     X_nolvl1drop_qids_c = orig_data_matrix
@@ -1062,28 +1067,28 @@ def select_subjects(root_data_dir_path, read_csv_filter, holdout_label='all'):
 
     # Handle the TRD stuff
     
-    y_nolvl1drop_trdrem_qids01_c = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX))
-    y_nolvl1drop_trdrem_qids01_sr = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX))
+    y_nolvl1drop_trdrem_qids01_c = pd.read_csv(os.path.join(input_y_generation_dir_path, "y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX))
+    y_nolvl1drop_trdrem_qids01_sr = pd.read_csv(os.path.join(input_y_generation_dir_path, "y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX))
 
-    X_nolvl1drop_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_c, y_nolvl1drop_trdrem_qids01_c, 'c', read_csv_filter)
-    X_nolvl1drop_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_sr, y_nolvl1drop_trdrem_qids01_sr, 'sr', read_csv_filter)
+    X_nolvl1drop_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_c, y_nolvl1drop_trdrem_qids01_c, 'c', pd.read_csv)
+    X_nolvl1drop_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_nolvl1drop_qids_sr, y_nolvl1drop_trdrem_qids01_sr, 'sr', pd.read_csv)
 
     # Subset the y matrices so that it matches the X matrices
     y_nolvl1drop_trdrem_qids01_c__final = y_nolvl1drop_trdrem_qids01_c[y_nolvl1drop_trdrem_qids01_c.subjectkey.isin(X_nolvl1drop_qids_c__final.subjectkey)]
     y_nolvl1drop_trdrem_qids01_sr__final = y_nolvl1drop_trdrem_qids01_sr[y_nolvl1drop_trdrem_qids01_sr.subjectkey.isin(X_nolvl1drop_qids_sr__final.subjectkey)]
 
     # Handle the week8 response stuff
-    y_wk8_resp_qids_c = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_wk8_resp_qids_c" + CSV_SUFFIX))
-    y_wk8_resp_qids_sr = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_wk8_resp_qids_sr" + CSV_SUFFIX))
+    y_wk8_resp_qids_c = pd.read_csv(os.path.join(input_y_generation_dir_path, "y_wk8_resp_qids_c" + CSV_SUFFIX))
+    y_wk8_resp_qids_sr = pd.read_csv(os.path.join(input_y_generation_dir_path, "y_wk8_resp_qids_sr" + CSV_SUFFIX))
 
     # Handle the week8 remission stuff
-    y_wk8_rem_qids_c = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_wk8_rem_qids_c" + CSV_SUFFIX))
-    y_wk8_rem_qids_sr = read_csv_filter(os.path.join(input_y_generation_dir_path, "y_wk8_rem_qids_sr" + CSV_SUFFIX))
+    y_wk8_rem_qids_c = pd.read_csv(os.path.join(input_y_generation_dir_path, "y_wk8_rem_qids_c" + CSV_SUFFIX))
+    y_wk8_rem_qids_sr = pd.read_csv(os.path.join(input_y_generation_dir_path, "y_wk8_rem_qids_sr" + CSV_SUFFIX))
 
     # Handle the X matrices of subjects who stayed until week 4
     # These use one of the y's, but it doesn't matter as only uses for subject selection which is same between those y matrices
-    X_tillwk4_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_tillwk4_qids_c, y_wk8_rem_qids_c, 'c', read_csv_filter)
-    X_tillwk4_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_tillwk4_qids_sr, y_wk8_rem_qids_sr, 'sr', read_csv_filter)
+    X_tillwk4_qids_c__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_tillwk4_qids_c, y_wk8_rem_qids_c, 'c', pd.read_csv)
+    X_tillwk4_qids_sr__final = handle_subject_selection_conditions(input_row_selected_dir_path, X_tillwk4_qids_sr, y_wk8_rem_qids_sr, 'sr', pd.read_csv)
 
     # Subset the y matrices so that they matches the X matrices
     y_wk8_resp_qids_c__final = y_wk8_resp_qids_c[y_wk8_resp_qids_c.subjectkey.isin(X_tillwk4_qids_c__final.subjectkey)]
@@ -1136,11 +1141,11 @@ def handle_subject_selection_conditions(input_row_selected_dir_path, X, y_df, qi
     X = X[X["subjectkey"].isin(y["subjectkey"])]
     
     # Select subjects that have ucq entries, aka eliminate subjects that don't have ucq entries, as a proxy for the small amount of subjects missing most patients. 
-    file_ucq = read_csv_filter(input_row_selected_dir_path + "/rs__ucq01" + CSV_SUFFIX)
+    file_ucq = pd.read_csv(input_row_selected_dir_path + "/rs__ucq01" + CSV_SUFFIX)
     X = X[X["subjectkey"].isin(file_ucq["subjectkey"])]
     
     # Eliminate subjects that don't have week0 QIDS entries from either QIDS-C or QIDS-SR
-    file_qids01_w0c = read_csv_filter(input_row_selected_dir_path + "/rs__qids01_w0" + qids_version + CSV_SUFFIX)
+    file_qids01_w0c = pd.read_csv(input_row_selected_dir_path + "/rs__qids01_w0" + qids_version + CSV_SUFFIX)
     X = X[X["subjectkey"].isin(file_qids01_w0c["subjectkey"])]
 
     return X

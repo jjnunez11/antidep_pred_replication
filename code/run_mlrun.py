@@ -20,16 +20,18 @@ def RunMLRun(pathData, pathLabel, f_select, model, evl, ensemble_n=30, n_splits=
     """ 
     Trains and evaluates a machine learning model. Returns metrics, and models
     """
-    testData = os.path.join(DATA_DIR, 'canbind_X_overlap_tillwk4_qids_sr.csv') # X data matrix over CAN-BIND, only overlapping features with STAR*D, subjects who have qids sr until at least week 4
-    if evl == "extval_resp":
-        testLabel = os.path.join(DATA_DIR, 'canbind_y_tillwk8_resp_qids_sr.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr response
-    elif evl == "extval_rem":
-        testLabel = os.path.join(DATA_DIR, 'canbind_y_tillwk8_rem_qids_sr.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr remission
-    elif evl == "extval_rem_randomized": # A control to make sure our extval_rem results are robust, with the targets scrambled randomly
-        testLabel = os.path.join(DATA_DIR, 'canbind_y_tillwk8_randomized.csv') # y matrix from canbind, with subjects as above, with targets scrambled
-    elif evl == "cv": # Use randomized as a placeholder, won't be used for cv
-        testLabel = os.path.join(DATA_DIR, 'canbind_y_tillwk8_randomized.csv') # y matrix from canbind, with subjects as above, with targets scrambled
- 
+    if evl == "cv":
+        testData = os.path.join(DATA_DIR, pathData + "_holdout.csv")
+        testLabel = os.path.koin(DATA_DIR, pathLabel + "_holdout.csv")
+    else:
+        testData = os.path.join(DATA_DIR, 'canbind_X_overlap_tillwk4_qids_sr.csv')  # X data matrix over CAN-BIND, only overlapping features with STAR*D, subjects who have qids sr until at least week 4
+        if evl == "extval_resp":
+            testLabel = os.path.join(DATA_DIR, 'canbind_y_tillwk8_resp_qids_sr.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr response
+        elif evl == "extval_rem":
+            testLabel = os.path.join(DATA_DIR, 'canbind_y_tillwk8_rem_qids_sr.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr remission
+        elif evl == "extval_rem_randomized": # A control to make sure our extval_rem results are robust, with the targets scrambled randomly
+            testLabel = os.path.join(DATA_DIR, 'canbind_y_tillwk8_randomized.csv') # y matrix from canbind, with subjects as above, with targets scrambled
+
     # read data and chop the header
     X_test = np.genfromtxt(testData, delimiter=',')[1:,1:]
     y_test = np.genfromtxt(testLabel, delimiter=',')[1:,1]

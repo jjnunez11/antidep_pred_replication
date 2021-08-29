@@ -32,9 +32,9 @@ def separate_holdout_ids(data_dir):
     qids_df = pd.read_csv(os.path.join(data_dir, 'qids01.txt'), sep='\t', skiprows=[1])
     qids_subj_ids = qids_df[COL_NAME_SUBJECTKEY].unique().tolist()  # Get set of all subject ids
 
-    split_holdout_ids, split_non_holdout_ids = train_test_split(qids_subj_ids, test_size=0.20, random_state=5)
+    split_non_holdout_ids, split_holdout_ids = train_test_split(qids_subj_ids, test_size=0.20, random_state=5)
     print(f'Number of subjects in each set {len(qids_subj_ids)}, {len(split_holdout_ids)}, {len(split_non_holdout_ids)}')
-    return qids_subj_ids, split_holdout_ids, split_non_holdout_ids
+    return qids_subj_ids, split_non_holdout_ids, split_holdout_ids
 
 
 def create_read_csv_filter(set_filtered_ids):
@@ -45,23 +45,43 @@ def create_read_csv_filter(set_filtered_ids):
     :return: a function as above
     """
 
-    def a_read_csv_filter(f, *args, **kwargs):
-        df = pd.read_csv(f, *args, **kwargs)
-        df[df[COL_NAME_SUBJECTKEY].isin(set_filtered_ids)]  # Only keep in data from this set
-        filtered_df = df
+    def a_read_csv_filter(f, **kwargs):
+        df = pd.read_csv(f, **kwargs)
+        filtered_df = df[df[COL_NAME_SUBJECTKEY].isin(set_filtered_ids)]  # Only keep in data from this set
         return filtered_df
 
     return a_read_csv_filter
+    #return pd.read_csv
 
 
 if __name__ == "__main__":
     data_dir_path = sys.argv[1]
     option = sys.argv[2]
-    is_valid = len(sys.argv) == 3 and os.path.isdir(data_dir_path)
+    ho_option = sys.argv[3]
+    is_valid = len(sys.argv) == 4 and os.path.isdir(data_dir_path)
 
-    all_ids, holdout_ids, non_holdout_ids = separate_holdout_ids(data_dir_path)
+    entire_ids, non_holdout_ids, holdout_ids, = separate_holdout_ids(data_dir_path)
 
-    for holdout_label, filtered_ids in zip(['holdout', 'non_holdout', 'all'], [all_ids, holdout_ids, non_holdout_ids]):
+    if ho_option == '-all':
+        ho_labels = ['entire', 'holdout', 'non_holdout']
+        ho_filters = [entire_ids, holdout_ids, non_holdout_ids]
+    elif ho_option == '-ho':
+        ho_labels = ['holdout']
+        ho_filters = [holdout_ids]
+    elif ho_option == '-non_ho':
+        ho_labels = ['non_holdout']
+        ho_filters = [non_holdout_ids]
+    elif ho_option == '-entire':
+        ho_labels = ['entire']
+        ho_filters = [entire_ids]
+    else:
+        raise Exception("Enter valid argument for holdout option\n"
+                        "\t path: the path to a real directory\n"
+                        "\t option: preprocessing option, e.g. -a\n"
+                        "\t ho_option: holdout set option e.g. all\n"
+                        "\t e.g. python stard_preprocessing_manager.py /Users/teyden/Downloads/stardmarch19v3 -a -all")
+
+    for holdout_label, filtered_ids in zip(ho_labels, ho_filters):
         read_csv_filter = create_read_csv_filter(filtered_ids)
 
         if is_valid and option in ["--row-select", "-rs"]:
@@ -108,7 +128,10 @@ if __name__ == "__main__":
                   "\t Generation of y matrices\n" +
                   "\t Subject selection\n")
 
-    else:
-        raise Exception("Enter valid arguments\n"
-                        "\t path: the path to a real directory\n"
-                        "\t e.g. python stard_preprocessing_manager.py /Users/teyden/Downloads/stardmarch19v3 -a")
+        else:
+            raise Exception("Enter valid argument for holdout option\n"
+                            "\t path: the path to a real directory\n"
+                            "\t option: preprocessing option, e.g. -a\n"
+                            "\t ho_option: holdout set option e.g. all\n"
+                            "\t e.g. python stard_preprocessing_manager.py /Users/teyden/Downloads/stardmarch19v3 -a "
+                            "-all")
