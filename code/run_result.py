@@ -15,7 +15,7 @@ from run_globals import DATA_DIR, RESULTS_DIR
 
 startTime = datetime.datetime.now()
 
-def RunResult(runs, evl, model,f_select, data, label, table=""):    
+def RunResult(runs, evl, model, f_select, data_name, label_name, table=""):
     # Make a folder for each table to keep things organized
     table_path = os.path.join(RESULTS_DIR, table)
     if not(os.path.exists(table_path)):
@@ -43,7 +43,7 @@ def RunResult(runs, evl, model,f_select, data, label, table=""):
     feats = np.zeros(runs) # Average number of the average number of features used per classifier trained
 
     # Create filename based on parameters
-    result_filename = "{}_{}_{}_{}_{}_{}_{}".format(evl, model, runs,data, label, f_select, datetime.datetime.now().strftime("%Y%m%d-%H%M"))
+    result_filename = "{}_{}_{}_{}_{}_{}_{}".format(evl, model, runs, data_name, label_name, f_select, datetime.datetime.now().strftime("%Y%m%d-%H%M"))
     # Make a dir for each result
     result_dir = os.path.join(table_path, result_filename)
     if not(os.path.exists(result_dir)):
@@ -51,7 +51,7 @@ def RunResult(runs, evl, model,f_select, data, label, table=""):
     
     for i in range(runs):
             
-            accus[i], bal_accus[i], aucs[i], senss[i], specs[i], precs[i], f1s[i], feats[i], impt, confus_mat, run_clfs = RunMLRun(data, label, f_select, model, evl, ensemble_n, n_splits)
+            accus[i], bal_accus[i], aucs[i], senss[i], specs[i], precs[i], f1s[i], feats[i], impt, confus_mat, run_clfs = RunMLRun(data_name, label_name, f_select, model, evl, ensemble_n, n_splits)
        
             tps[i] = confus_mat['tp']
             fps[i] = confus_mat['fp']
@@ -78,11 +78,11 @@ def RunResult(runs, evl, model,f_select, data, label, table=""):
     std_impts = np.std(impts, axis=0)
 
     if evl == "cv":
-        data_path = os.path.join(DATA_DIR, data + "non_holdout.csv")
-        label_path = os.path.join(DATA_DIR, label + "non_holdout.csv")
+        data_path = os.path.join(DATA_DIR, data_name + "non_holdout.csv")
+        label_path = os.path.join(DATA_DIR, label_name + "non_holdout.csv")
     else:
-        data_path = os.path.join(DATA_DIR, data + ".csv")
-        label_path = os.path.join(DATA_DIR, label + ".csv")
+        data_path = os.path.join(DATA_DIR, data_name + ".csv")
+        label_path = os.path.join(DATA_DIR, label_name + ".csv")
     
     sorted_features = np.argsort(avg_impts)[::-1]
     top_31_features = sorted_features[0:31] #In descending importance, first is most important
@@ -131,7 +131,7 @@ def RunResult(runs, evl, model,f_select, data, label, table=""):
         f.write("Code does not support feature for this model at this time\n")
     
     f.write("Statistical Significance:----------------------------\n")
-    if (data == "full_trd" or data =="ovlap_trd") and model == "rf_cv" and f_select == "all":
+    if (data_name == "full_trd" or data_name == "ovlap_trd") and model == "rf_cv" and f_select == "all":
       _,acc_pvalue = ttest_1samp(accus, 0.70)
       f.write("P-value from one sided t-test vs Nie et al's 0.70 Accuracy: {:.6f}\n".format(acc_pvalue))
       _,bal_pvalue = ttest_1samp(bal_accus, 0.70)

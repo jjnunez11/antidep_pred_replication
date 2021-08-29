@@ -373,6 +373,9 @@ def one_hot_encode_scales(root_data_dir_path, read_csv_filter, holdout_label='al
                 scale_df[col_name] = scale_df[col_name].astype("object")
                 scale_df[col_name] = scale_df[col_name].replace(to_replace=conversion_map)
 
+
+
+
         elif scale_name == "phx01":
             """
             Note: the raw files had these unique values per column (in order of the list below)
@@ -414,6 +417,19 @@ def one_hot_encode_scales(root_data_dir_path, read_csv_filter, holdout_label='al
         else:
             scale_df = one_hot_encode(scale_df, cols_to_one_hot_encode)
             scale_df = scale_df.drop(columns=cols_to_one_hot_encode)
+
+        # When making a holdout set, some rare entires may not exist post one-hot, so check and add them if needed to
+        # match the non-holdout set etc.
+        if scale_name == "dm01_enroll":
+            for rare_col in ['resid||7.0', 'resid||6.0']:
+                if not (rare_col in scale_df):
+                    scale_df[rare_col] = 0.0
+            scale_df = scale_df.reindex(sorted(scale_df.columns), axis=1) # Sort to ensure all sets have same column order
+        elif scale_name == "ccv01_w2":
+            if not ("trtmt||3.0" in scale_df):
+                scale_df["trtmt||3.0"] = 0.0
+            scale_df = scale_df.reindex(sorted(scale_df.columns), axis=1) # Sort to ensure all sets have same column order
+
 
         output_file_name = ONE_HOT_ENCODED_PREFIX + scale_name
         scale_df.to_csv(os.path.join(output_one_hot_encoded_dir_path, output_file_name + CSV_SUFFIX) , index=False)
@@ -857,7 +873,7 @@ def generate_y(root_data_dir_path, read_csv_filter, holdout_label='all'):
         curr_scale_path = root_data_dir_path + "/" + filename
 
         # Read in the txt file + preliminary processing
-        scale_df = read_csv_filter(curr_scale_path, sep='\t', skiprows=[1])
+        scale_df = pd.read_csv(curr_scale_path, sep='\t', skiprows=[1])
 
         print(LINE_BREAK)
         print("Handling scale = ", scale_name)
@@ -1138,8 +1154,8 @@ def select_subjects(root_data_dir_path, read_csv_filter, holdout_label='all'):
     y_wk8_rem_qids_c__final.to_csv(os.path.join(output_subject_selected_path, "y_wk8_rem_qids_c_" + holdout_label + CSV_SUFFIX), index=False)
     y_wk8_rem_qids_sr__final.to_csv(os.path.join(output_subject_selected_path, "y_wk8_rem_qids_sr_" + holdout_label + CSV_SUFFIX), index=False)
 
-    y_wk8_resp_qids_sr_nolvl1drop.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_sr_nolvl1drop" + CSV_SUFFIX), index=False)
-    y_wk8_resp_qids_c_nolvl1drop.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_c_nolvl1drop" + CSV_SUFFIX), index=False)
+    y_wk8_resp_qids_sr_nolvl1drop.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_sr_nolvl1drop" + holdout_label + CSV_SUFFIX), index=False)
+    y_wk8_resp_qids_c_nolvl1drop.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_c_nolvl1drop" + holdout_label + CSV_SUFFIX), index=False)
     
     print("Files written to: ", output_subject_selected_path)
 
@@ -1151,11 +1167,11 @@ def handle_subject_selection_conditions(input_row_selected_dir_path, X, y_df, qi
     X = X[X["subjectkey"].isin(y["subjectkey"])]
     
     # Select subjects that have ucq entries, aka eliminate subjects that don't have ucq entries, as a proxy for the small amount of subjects missing most patients. 
-    file_ucq = pd.read_csv(input_row_selected_dir_path + "/rs__ucq01" + CSV_SUFFIX)
+    file_ucq = read_csv_filter(input_row_selected_dir_path + "/rs__ucq01" + CSV_SUFFIX)
     X = X[X["subjectkey"].isin(file_ucq["subjectkey"])]
     
     # Eliminate subjects that don't have week0 QIDS entries from either QIDS-C or QIDS-SR
-    file_qids01_w0c = pd.read_csv(input_row_selected_dir_path + "/rs__qids01_w0" + qids_version + CSV_SUFFIX)
+    file_qids01_w0c = read_csv_filter(input_row_selected_dir_path + "/rs__qids01_w0" + qids_version + CSV_SUFFIX)
     X = X[X["subjectkey"].isin(file_qids01_w0c["subjectkey"])]
 
     return X

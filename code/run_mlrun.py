@@ -16,32 +16,37 @@ import numpy as np
 from run_globals import DATA_DIR
 import os
 
-def RunMLRun(pathData, pathLabel, f_select, model, evl, ensemble_n=30, n_splits=10):
+
+def RunMLRun(data_name, label_name, f_select, model, evl, ensemble_n=30, n_splits=10):
     """ 
     Trains and evaluates a machine learning model. Returns metrics, and models
     """
     if evl == "cv":
-        testData = os.path.join(DATA_DIR, pathData + "_holdout.csv")
-        testLabel = os.path.koin(DATA_DIR, pathLabel + "_holdout.csv")
+        test_data = os.path.join(DATA_DIR, data_name + "_holdout.csv")
+        test_label = os.path.koin(DATA_DIR, label_name + "_holdout.csv")
     else:
-        testData = os.path.join(DATA_DIR, 'canbind_X_overlap_tillwk4_qids_sr.csv')  # X data matrix over CAN-BIND, only overlapping features with STAR*D, subjects who have qids sr until at least week 4
+        test_data = os.path.join(DATA_DIR, 'canbind_X_overlap_tillwk4_qids_sr.csv')  # X data matrix over CAN-BIND, only overlapping features with STAR*D, subjects who have qids sr until at least week 4
         if evl == "extval_resp":
-            testLabel = os.path.join(DATA_DIR, 'canbind_y_tillwk8_resp_qids_sr.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr response
+            test_label = os.path.join(DATA_DIR, 'canbind_y_tillwk8_resp_qids_sr.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr response
         elif evl == "extval_rem":
-            testLabel = os.path.join(DATA_DIR, 'canbind_y_tillwk8_rem_qids_sr.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr remission
+            test_label = os.path.join(DATA_DIR, 'canbind_y_tillwk8_rem_qids_sr.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr remission
         elif evl == "extval_rem_randomized": # A control to make sure our extval_rem results are robust, with the targets scrambled randomly
-            testLabel = os.path.join(DATA_DIR, 'canbind_y_tillwk8_randomized.csv') # y matrix from canbind, with subjects as above, with targets scrambled
+            test_label = os.path.join(DATA_DIR, 'canbind_y_tillwk8_randomized.csv') # y matrix from canbind, with subjects as above, with targets scrambled
 
     # read data and chop the header
-    X_test = np.genfromtxt(testData, delimiter=',')[1:,1:]
-    y_test = np.genfromtxt(testLabel, delimiter=',')[1:,1]
+    X_test = np.genfromtxt(test_data, delimiter=',')[1:,1:]
+    y_test = np.genfromtxt(test_label, delimiter=',')[1:,1]
     
-    X = np.genfromtxt(pathData, delimiter=',')
-    y = np.genfromtxt(pathLabel, delimiter=',')[1:,1]
+    X = np.genfromtxt(data_name, delimiter=',')
+    y = np.genfromtxt(label_name, delimiter=',')[1:, 1]
     X = X[1:,1:]
     
     n,m = X.shape
     kf = KFold(n_splits, shuffle=True)
+
+    # Assert columns are same between X and X_test
+    assert ((X.columns == X_test.columns).all(), "Columns must be same and in same order between X and X_test")
+
 
     j=1
     accu = np.empty([10,], dtype=float)
@@ -59,11 +64,11 @@ def RunMLRun(pathData, pathLabel, f_select, model, evl, ensemble_n=30, n_splits=
     feature_importances =  np.empty([10,m], dtype=float)  # Store feature importances relative to the original ordering.
     clfs = [None]*n_splits
         
-    for train_index, test_index in kf.split(X):
+    for train_index, val_index in kf.split(X):
         print("Fold:", j)
 
-        X_train, _ = X[train_index], X[test_index]
-        y_train, _ = y[train_index], y[test_index]
+        X_train, _ = X[train_index], X[val_index]
+        y_train, _ = y[train_index], y[val_index]
 
         # If you want training cross-validation results, use this, and then seperate below so you're holding both
         # holdout set results and cv results
@@ -141,8 +146,7 @@ def RunMLRun(pathData, pathLabel, f_select, model, evl, ensemble_n=30, n_splits=
                 # Feature importance for linear methods in sklearn                
                 feature_importance += clf[i].coef_.flatten()
                 features_n_fold += np.count_nonzero(clf[i].coef_) 
-                
-            
+
         pred_prob = pred_prob/ensemble_n
         # Pick the class with the greastest probability to be the prediction
         if model == "xgbt":
