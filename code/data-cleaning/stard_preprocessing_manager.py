@@ -797,13 +797,23 @@ def replace_with_median(df, col_names):
 
 def replace_with_mode(df, col_names):
     if set(col_names).issubset(df.columns):
-        print(col_names)
-        df[col_names] = df[col_names].apply(lambda col: col.fillna(float(col.mode())), axis=0)
+        # df[col_names] = df[col_names].apply(lambda col: col.fillna(float(col.mode())), axis=0)
         for col in col_names:
-            print(f'{col} is {df[col].dtype} and mode is {df[col].mode()}')
-            df[col] = df[col].fillna(float(df[col].mode()))
-            print(f'{col} imputed!')
-        print("Imputed blanks with mode")
+            # As mode may (infrequently lol) result in more than one answer, randomly pick 1
+            mode = df[col].mode()
+            one_mode = float(mode.sample(n=1, random_state=1))
+            df[col] = df[col].fillna(one_mode)
+
+            #try:
+
+            #except:
+                #print(f'{col} is {df[col].dtype} and mode is {df[col].mode()}')
+                #print(f'here is the bad col, with shape {df[col].shape}')
+
+                #print(df[col])
+                #raise Exception
+            #print(f'{col} imputed!')
+        #print("Imputed blanks with mode")
     else:
         raise Exception("Column names are not subset: {}".format(set(col_names).difference(df.columns)))
     return df
