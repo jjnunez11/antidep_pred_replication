@@ -875,7 +875,7 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
         curr_scale_path = root_data_dir_path + "/" + filename
 
         # Read in the txt file + preliminary processing
-        scale_df = pd.read_csv(curr_scale_path, sep='\t', skiprows=[1]) #TODO: Replaced
+        scale_df = pd.read_csv(curr_scale_path, sep='\t', skiprows=[1])
         scale_df = scale_df[scale_df[COL_NAME_SUBJECTKEY].isin(holdout_set_ids)]  # Only keep in data from this set
 
 
@@ -928,18 +928,15 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                             sorted_lvl1 = subset_lvl1.sort_values(by=['days_baseline'], ascending=False)
                             baseline_lvl1 = sorted_lvl1.iloc[-1]['qstot']
                             locf_lvl1 = sorted_lvl1.iloc[0]['qstot']
-                            baseline_lvl1_start_day = sorted_lvl1.iloc[-1]['days_baseline']
-                            locf_lvl1_end_day = sorted_lvl1.iloc[0]['days_baseline']
-                            lvl1_days_in = locf_lvl1_end_day - baseline_lvl1_start_day # As week data is often
-                            # missing, use difference in days_baseline instead, as over 21 days corresponds to 4 or
-                            # more weeks according to the week data we do have
+                            locf_lvl1_day = sorted_lvl1.iloc[0]['days_baseline']
+                            # As week data is often missing, use greater than days_baseline 21 as a stand in for week 4
 
                             if baseline_lvl1 < 6:
                                 ValueError('woh there was a baseline value less than 5!')
 
-                            if locf_lvl1 <= 5 and baseline_lvl1 > 5:  # and lvl1_days_in > 21
+                            if locf_lvl1 <= 5 and locf_lvl1_day > 21 and baseline_lvl1 > 5:
                                 remission_lvl1 = 'YES'
-                            elif locf_lvl1 >= 6 and lvl1_days_in > 21 and baseline_lvl1 > 5:
+                            elif locf_lvl1 >= 6 and locf_lvl1_day > 21 and baseline_lvl1 > 5:
                                 remission_lvl1 = 'NO'
 
                         # Level 2 Remission
@@ -997,28 +994,28 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                             sorted_wk8 = subset_wk8.sort_values(by=['days_baseline'], ascending=False)
                             baseline_wk8 = sorted_wk8.iloc[-1]['qstot']
                             locf_wk8 = sorted_wk8.iloc[0]['qstot']
-                            baseline_start_day = sorted_wk8.iloc[-1]['days_baseline']
-                            locf_end_day = sorted_wk8.iloc[0]['days_baseline']
-                            days_in_study_wk8 = locf_end_day - baseline_start_day  # As week data is often
-                            # missing, use difference in days_baseline instead, as over 21 days corresponds to 4 or
-                            # more weeks according to the week data we do have
+                            locf_day = sorted_wk8.iloc[0]['days_baseline']
 
                             if baseline_wk8 < 6:
                                 ValueError('woh there was a baseline value less than 5!')
 
-                            # Check for remission, must be <21 days (wk4) to count either way,
+                            # Check for remission, must be >21 days (wk4) to count either way,
                             # and then must achieve LOCF of 5 or less
-                            if locf_wk8 <= 5 and days_in_study_wk8 > 21 and baseline_wk8 > 5:
+                            if locf_wk8 <= 5 and locf_day > 21 and baseline_wk8 > 5:
+                                y_wk8_rem_qids01.loc[i, "subjectkey"] = subject_id
                                 y_wk8_rem_qids01.loc[i, "target"] = 1
-                            elif locf_wk8 >= 6 and days_in_study_wk8 > 21 and baseline_wk8 > 5:
+                            elif locf_wk8 > 5 and locf_day > 21 and baseline_wk8 > 5:
+                                y_wk8_rem_qids01.loc[i, "subjectkey"] = subject_id
                                 y_wk8_rem_qids01.loc[i, "target"] = 0
 
                             # Check for response, must be <21 days (wk4) to count either way,
                             # and then must achieve LOCF of 50% or less of baseline
-                            if locf_wk8 <= 0.5*baseline_wk8 and days_in_study_wk8 > 21 and baseline_wk8 > 5:
+                            if locf_wk8 <= 0.5*baseline_wk8 and locf_day > 21 and baseline_wk8 > 5:
                                 y_wk8_resp_qids01.loc[i, "target"] = 1
-                            elif locf_wk8 > 0.5*baseline_wk8 and days_in_study_wk8 > 21 and baseline_wk8 > 5:
+                                y_wk8_resp_qids01.loc[i, "subjectkey"] = subject_id
+                            elif locf_wk8 > 0.5*baseline_wk8 and locf_day > 21 and baseline_wk8 > 5:
                                 y_wk8_resp_qids01.loc[i, "target"] = 0
+                                y_wk8_resp_qids01.loc[i, "subjectkey"] = subject_id
                     i += 1
 
                 # Copy temporary targets to the correct QIDS version, self-rated or clinician rated

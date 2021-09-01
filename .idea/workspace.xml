@@ -4,8 +4,6 @@
     <list default="true" id="5f792933-6650-4a4a-bd90-aa2ae92261a0" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/data-cleaning/stard_preprocessing_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/data-cleaning/stard_preprocessing_manager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/data-cleaning/stard_preprocessor.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/data-cleaning/stard_preprocessor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/run_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/run_results.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -257,7 +255,14 @@
       <option name="project" value="LOCAL" />
       <updated>1630277214198</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Starting to fix remission and response targets to be locf and require week 8">
+      <created>1630529991676</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1630529991676</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TodoView">
@@ -311,7 +316,8 @@
     <MESSAGE value="Changing filtering till after the raw reads, so that we don't drop columns we don't mean to" />
     <MESSAGE value="Bugs fixed, seems to be good besides some slight differences likely due to different imputation" />
     <MESSAGE value="Fixed ho and other issues and running, will need to go back and double check" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed ho and other issues and running, will need to go back and double check" />
+    <MESSAGE value="Starting to fix remission and response targets to be locf and require week 8" />
+    <option name="LAST_COMMIT_MESSAGE" value="Starting to fix remission and response targets to be locf and require week 8" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/antidep_pred_replication$run_results.coverage" NAME="run_results Coverage Results" MODIFIED="1630372315330" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
