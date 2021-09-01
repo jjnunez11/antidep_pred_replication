@@ -10,10 +10,10 @@ Adjust number of runs below
 """
 
 if __name__ == "__main__":
-    runs = 10
+    runs = 1
 
     # Table 3: Replication 
-    if True:
+    if False:
         table = 'table3_replication'
     
         X_matrix = "X_nolvl1drop_qids_c" # STAR*D full feature data matrix, with subjects who do not drop in level according to having QIDS-C scores
@@ -68,6 +68,6 @@ if __name__ == "__main__":
         RunResult(runs, "extval_resp", 'rf', 'all', 'X_overlap_tillwk4_qids_sr', 'y_tillwk4_wk8_resp_qids_sr', table)
 
     # Temp runs
-    # RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids_c', 'quick')
+    RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids_c', 'quick_randomtest')
 
     print("Ran all succesfully!")

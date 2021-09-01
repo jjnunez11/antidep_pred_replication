@@ -888,9 +888,10 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
             over21_df = scale_df.loc[scale_df['days_baseline'] > 21] # New, use this to check subjects remained 4 weeks. 
             
             for vers in ['c', 'sr']:
-                # y_lvl2_rem_qids01 = pd.DataFrame()
+                # Temporary dataframes to store TRD, remission, or response,
+                # and then assign to either Clinician or Self-Report
+                y_wk8_rem_qids01 = pd.DataFrame()
                 y_wk8_resp_qids01 = pd.DataFrame()
-                # y_lvl2_rem_qids01_tillwk4 = pd.DataFrame()
                 y_nolvl1drop_trdrem_qids01 = pd.DataFrame()
                 
                 if vers == 'c': 
@@ -901,12 +902,13 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                     Exception()
                 
                 i = 0
-                for id, group in scale_df.groupby(['subjectkey']):
-                    if id in over21_df['subjectkey'].values: # Only generate y if this subject stayed in study for 4 weeks             
+                for subject_id, group in scale_df.groupby(['subjectkey']):
+                    if subject_id in over21_df['subjectkey'].values: # Only generate y if this subject stayed in study for 4
+                        # weeks
                         # Generate TRD status. Based closely on a snippet provided by Qingqin Li. It does seem to vary
                         # slight from the Nie et al paper.
 
-                        y_nolvl1drop_trdrem_qids01.loc[i,"subjectkey"] = id
+                        y_nolvl1drop_trdrem_qids01.loc[i,"subjectkey"] = subject_id
 
                         # Make subset of entries for this subject in level 1 and in 2 or 2.1
                         subset_lvl1 = group[(group['version_form'] == version_form) & (group['level'] == "Level 1")]
@@ -962,7 +964,6 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
 
                         # Write out based on remission or reaching Level 2. Use same logic as provided by Nie et al
                         # code snippet, which could be simplified
-                        #print(f'Heres readmission_lvl1: {remission_lvl1} and readmission_lvl2: {remission_lvl2}')
 
                         if remission_lvl1 == 'YES':
                             y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
@@ -975,88 +976,62 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
 
                         i += 1
     
-                # Create CAN-BIND overlapping targets with QIDS-SR remission
+                # Create Week 9 QIDS Response and Remission Targets, for use with CAN-BIND overlapping targets etc
+                # Referred to as Week 8 as it is used to compare/ext validate  with CAN-BIND week 8
                 i = 0
-                for id, group in scale_df.groupby(['subjectkey']):
-                    if id in over21_df['subjectkey'].values: # Only generate y if this subject stayed in study for 4 weeks             
-                        # Grab the baseline entry
-                        subset = group[(group['version_form'] == version_form)]
-                        if subset.shape[0] == 0:
-                            continue
-    
-                        baseline = subset.sort_values(by=['days_baseline'], ascending=True).iloc[0]['qstot']
-                        y_wk8_resp_qids01.loc[i, "subjectkey"] = id
-                    
-                        # Grab the later days_baseline entries
-                        subset = group[(group['version_form'] == version_form) & (group['days_baseline'] <= 77)]
-                        # Added due to a bug where there is nan qstot at days_baseline = 0
-                        subset = subset[subset['qstot'].notna()]
+                for subject_id, group in scale_df.groupby(['subjectkey']):
+                    if subject_id in over21_df['subjectkey'].values:  # Only generate y if this subject stayed in
+                        # study for 4 weeks
 
-                        if subset.shape[0] == 0:
+                        # Grab the relevant entries between week 0 and week 8 in the study
+                        subset_wk8 = group[(group['version_form'] == version_form) & (group['days_baseline'] <= 77)]
+                        # Drop blank/NaN entries
+                        subset_wk8 = subset_wk8[subset_wk8['qstot'].notna()]
+
+                        # Skip subject (will be dropped) if does not have any relevant entries
+                        if subset_wk8.shape[0] == 0:
                             continue
 
-                        y_wk8_resp_qids01.loc[i, "target"] = 0
+                        # If does, proceed to check for response or remission
+                        if subset_wk8.shape[0] != 0:
+                            sorted_wk8 = subset_wk8.sort_values(by=['days_baseline'], ascending=False)
+                            baseline_wk8 = sorted_wk8.iloc[-1]['qstot']
+                            locf_wk8 = sorted_wk8.iloc[0]['qstot']
+                            baseline_start_day = sorted_wk8.iloc[-1]['days_baseline']
+                            locf_end_day = sorted_wk8.iloc[0]['days_baseline']
+                            days_in_study_wk8 = locf_end_day - baseline_start_day  # As week data is often
+                            # missing, use difference in days_baseline instead, as over 21 days corresponds to 4 or
+                            # more weeks according to the week data we do have
 
-                        end_score = subset.sort_values(by=['days_baseline'], ascending=False).iloc[0]['qstot']
-                        if end_score <= 0.5 * baseline:
-                            y_wk8_resp_qids01.loc[i, "target"] = 1
+                            if baseline_wk8 < 6:
+                                ValueError('woh there was a baseline value less than 5!')
 
-                        # Old "response BY week 8" implementation
-                        #for k, row in subset.iterrows():
-                        #    #If any of the depression scores at later days_baseline is half or less of baseline, then subject is TRD
-                        #    if row['qstot'] <= 0.5 * baseline:
-                        #        y_wk8_resp_qids01.loc[i, "target"] = 1
-                        #         break
+                            # Check for remission, must be <21 days (wk4) to count either way,
+                            # and then must achieve LOCF of 5 or less
+                            if locf_wk8 <= 5 and days_in_study_wk8 > 21 and baseline_wk8 > 5:
+                                y_wk8_rem_qids01.loc[i, "target"] = 1
+                            elif locf_wk8 >= 6 and days_in_study_wk8 > 21 and baseline_wk8 > 5:
+                                y_wk8_rem_qids01.loc[i, "target"] = 0
 
+                            # Check for response, must be <21 days (wk4) to count either way,
+                            # and then must achieve LOCF of 50% or less of baseline
+                            if locf_wk8 <= 0.5*baseline_wk8 and days_in_study_wk8 > 21 and baseline_wk8 > 5:
+                                y_wk8_resp_qids01.loc[i, "target"] = 1
+                            elif locf_wk8 > 0.5*baseline_wk8 and days_in_study_wk8 > 21 and baseline_wk8 > 5:
+                                y_wk8_resp_qids01.loc[i, "target"] = 0
                     i += 1
-                
+
+                # Copy temporary targets to the correct QIDS version, self-rated or clinician rated
                 if vers == 'c':
                     y_nolvl1drop_trdrem_qids01_c = y_nolvl1drop_trdrem_qids01
                     y_wk8_resp_qids_c = y_wk8_resp_qids01
+                    y_wk8_rem_qids_c = y_wk8_rem_qids01
                 elif vers == 'sr': 
                     y_nolvl1drop_trdrem_qids01_sr = y_nolvl1drop_trdrem_qids01
                     y_wk8_resp_qids_sr = y_wk8_resp_qids01
+                    y_wk8_rem_qids_sr = y_wk8_rem_qids01
                 else:
                     Exception()
-                    
-                    
-                
-            # Create targets from both QIDS-C and QIDS-SR for week 8 remissions (qids_tot <= 5)
-            i = 0
-            for id, group in scale_df.groupby(['subjectkey']):
-                if id in over21_df['subjectkey'].values: # Only generate y if this subject stayed in study for 4 weeks             
-                    y_wk8_rem_qids_c.loc[i, "subjectkey"] = id
-                    y_wk8_rem_qids_sr.loc[i, "subjectkey"] = id
-                    
-                
-                    # Assign 1 to all subjects who achieve remission within first 8 weeks, which is less than 77 days in their recording as sheets with weeks recorded have days baseline up to 77 given a possible long intro period
-
-                    # Find relevant qstot entries in the first 9 weels (using 9 weeks instead of 8 in CANBIND, 77 days_baseline coresponds to week 9)
-                    subset_c = group[(group['version_form'] == "Clinician") & (group['days_baseline'] <= 77)]
-                    subset_sr = group[(group['version_form'] == "Self Rating") & (group['days_baseline'] <= 77)]
-                    # Drop NaN entries
-                    subset_c = subset_c[subset_c['qstot'].notna()]
-                    subset_sr = subset_sr[subset_sr['qstot'].notna()]
-                    # Get last observed score, which is AT or latest, so long as there are entries left
-                    # QIDS-C Remission
-                    if subset_c.shape[0] != 0:
-                        end_score_c = subset_c.sort_values(by=['days_baseline'], ascending=False).iloc[0]['qstot']
-                        if end_score_c <= 5:
-                            y_wk8_rem_qids_c.loc[i, "target"] = 1
-                        elif (end_score_c >= 0) and (end_score_c < 5):
-                            y_wk8_rem_qids_c.loc[i, "target"] = 0
-
-                    # QIDS-SR Remission
-                    if subset_sr.shape[0] != 0:
-                        end_score_sr = subset_sr.sort_values(by=['days_baseline'], ascending=False).iloc[0]['qstot']
-                        if 5 >= end_score_sr >= 0:
-                            y_wk8_rem_qids_sr.loc[i, "target"] = 1
-                        elif end_score_sr > 5:
-                            y_wk8_rem_qids_sr.loc[i, "target"] = 0
-
-                    # If there are no qids tot values, leave blank
-
-                    i += 1
             
     y_nolvl1drop_trdrem_qids01_c.to_csv(os.path.join(output_y_dir_path, "y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX), index=False)
     y_nolvl1drop_trdrem_qids01_sr.to_csv(os.path.join(output_y_dir_path, "y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX), index=False)

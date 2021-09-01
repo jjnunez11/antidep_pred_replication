@@ -26,8 +26,6 @@ Example terminal command:
 # python stard_preprocessor.py C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\teyden-git\data\stard_data -a
 
 
-
-
 def separate_holdout_ids(data_dir):
     qids_df = pd.read_csv(os.path.join(data_dir, 'qids01.txt'), sep='\t', skiprows=[1])
     qids_subj_ids = qids_df[COL_NAME_SUBJECTKEY].unique().tolist()  # Get set of all subject ids

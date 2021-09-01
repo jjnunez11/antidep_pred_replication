@@ -3,8 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="5f792933-6650-4a4a-bd90-aa2ae92261a0" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/run_mlrun.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/run_mlrun.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/run_result.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/run_result.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/data-cleaning/stard_preprocessing_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/data-cleaning/stard_preprocessing_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/data-cleaning/stard_preprocessor.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/data-cleaning/stard_preprocessor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/run_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/run_results.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -65,7 +65,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.gutterIcons" />
+    <property name="settings.editor.selected.configurable" value="duplicates.index" />
   </component>
   <component name="RunManager" selected="Python.run_results">
     <configuration name="Debugger" type="PythonConfigurationType" factoryName="Python">
@@ -250,7 +250,14 @@
       <option name="project" value="LOCAL" />
       <updated>1630276066638</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Fixed ho and other issues and running, will need to go back and double check">
+      <created>1630277214198</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1630277214198</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TodoView">
@@ -303,9 +310,10 @@
     <MESSAGE value="Found bug, will need to change how the filtering works annoyingly" />
     <MESSAGE value="Changing filtering till after the raw reads, so that we don't drop columns we don't mean to" />
     <MESSAGE value="Bugs fixed, seems to be good besides some slight differences likely due to different imputation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Bugs fixed, seems to be good besides some slight differences likely due to different imputation" />
+    <MESSAGE value="Fixed ho and other issues and running, will need to go back and double check" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed ho and other issues and running, will need to go back and double check" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/antidep_pred_replication$run_results.coverage" NAME="run_results Coverage Results" MODIFIED="1630258729543" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
+    <SUITE FILE_PATH="coverage/antidep_pred_replication$run_results.coverage" NAME="run_results Coverage Results" MODIFIED="1630372315330" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
   </component>
 </project>
