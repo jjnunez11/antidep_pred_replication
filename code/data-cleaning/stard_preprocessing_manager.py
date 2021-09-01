@@ -1011,11 +1011,12 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                             # Check for response, must be <21 days (wk4) to count either way,
                             # and then must achieve LOCF of 50% or less of baseline
                             if locf_wk8 <= 0.5*baseline_wk8 and locf_day > 21 and baseline_wk8 > 5:
+                                y_wk8_resp_qids01.loc[i, "subjectkey"] = subject_id
                                 y_wk8_resp_qids01.loc[i, "target"] = 1
-                                y_wk8_resp_qids01.loc[i, "subjectkey"] = subject_id
                             elif locf_wk8 > 0.5*baseline_wk8 and locf_day > 21 and baseline_wk8 > 5:
-                                y_wk8_resp_qids01.loc[i, "target"] = 0
                                 y_wk8_resp_qids01.loc[i, "subjectkey"] = subject_id
+                                y_wk8_resp_qids01.loc[i, "target"] = 0
+
                     i += 1
 
                 # Copy temporary targets to the correct QIDS version, self-rated or clinician rated
@@ -1028,7 +1029,7 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                     y_wk8_resp_qids_sr = y_wk8_resp_qids01
                     y_wk8_rem_qids_sr = y_wk8_rem_qids01
                 else:
-                    Exception()
+                    raise ValueError("Version must be c, clinician, or sr, self-rated")
             
     y_nolvl1drop_trdrem_qids01_c.to_csv(os.path.join(output_y_dir_path, "y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX), index=False)
     y_nolvl1drop_trdrem_qids01_sr.to_csv(os.path.join(output_y_dir_path, "y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX), index=False)
@@ -1130,8 +1131,8 @@ def select_subjects(root_data_dir_path,  holdout_label='all'):
     y_wk8_rem_qids_c__final.to_csv(os.path.join(output_subject_selected_path, "y_wk8_rem_qids_c_" + holdout_label + CSV_SUFFIX), index=False)
     y_wk8_rem_qids_sr__final.to_csv(os.path.join(output_subject_selected_path, "y_wk8_rem_qids_sr_" + holdout_label + CSV_SUFFIX), index=False)
 
-    y_wk8_resp_qids_sr_nolvl1drop.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_sr_nolvl1drop" + holdout_label + CSV_SUFFIX), index=False)
-    y_wk8_resp_qids_c_nolvl1drop.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_c_nolvl1drop" + holdout_label + CSV_SUFFIX), index=False)
+    y_wk8_resp_qids_sr_nolvl1drop.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_sr_nolvl1drop_" + holdout_label + CSV_SUFFIX), index=False)
+    y_wk8_resp_qids_c_nolvl1drop.to_csv(os.path.join(output_subject_selected_path, "y_wk8_resp_qids_c_nolvl1drop_" + holdout_label + CSV_SUFFIX), index=False)
     
     print("Files written to: ", output_subject_selected_path)
 
