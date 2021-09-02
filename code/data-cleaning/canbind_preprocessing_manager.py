@@ -3,16 +3,12 @@ import csv
 import pandas as pd
 import numpy as np
 import re
-import sys
 
 from canbind_globals import COL_NAME_PATIENT_ID,COL_NAME_EVENTNAME, EVENTNAME_WHITELIST, ORIGINAL_SCALE_FILENAMES, COL_NAMES_WHITELIST_PSYHIS, COL_NAMES_BLACKLIST_DARS, COL_NAMES_BLACKLIST_SHAPS, COL_NAMES_BLACKLIST_PSYHIS
 from canbind_globals import COL_NAME_GROUP, GROUP_WHITELIST, VALUE_REPLACEMENT_MAPS, QLESQ_COL_MAPPING, COL_NAMES_ONE_HOT_ENCODE, COL_NAMES_BLACKLIST_UNIQS, COLLISION_MANAGER
-from canbind_imputer import impute
-from canbind_ygen import ygen
 from canbind_utils import aggregate_rows, finalize_blacklist, one_hot_encode, merge_columns, add_columns_to_blacklist
 from canbind_utils import is_number, replace_target_col_values_to_be_refactored, collect_columns_to_extend, extend_columns_eventbased
 from utils import get_valid_subjects
-from generate_overlapping_features import convert_canbind_to_overlapping
 """ 
 Cleans and aggregates CAN-BIND data.
 
@@ -165,9 +161,16 @@ def aggregate_and_clean(root_dir, verbose=False, extra=False):
     merged_df = one_hot_encode(merged_df, COL_NAMES_ONE_HOT_ENCODE)
 
     # Finalize the blacklist, then do a final drop of columns (original ones before one-hot and blacklist columns)
-    add_columns_to_blacklist
     finalize_blacklist()
-    merged_df.drop(COL_NAMES_BLACKLIST_UNIQS, axis=1, inplace=True)
+    #for col in merged_df.columns:
+    #    print(col)
+    # merged_df.drop(COL_NAMES_BLACKLIST_UNIQS, axis=1, inplace=True)
+
+    for col in COL_NAMES_BLACKLIST_UNIQS:
+        try:
+            merged_df.drop(col, axis=1, inplace=True)
+        except KeyError:
+            print(f'col: {col} was not found!')
     
     # Eliminate invalid subjects in both X and y (those who don't make it to week 8)
     merged_df = get_valid_subjects(merged_df)
@@ -236,35 +239,6 @@ def print_info(merged_df, extra):
         if extra:
             print("\t", col_name, COLLISION_MANAGER[col_name])
 
-if __name__ == "__main__":
-    if len(sys.argv) == 2 and os.path.isdir(sys.argv[1]):
-        pathData = sys.argv[1]
-        aggregate_and_clean(pathData, verbose=False, extra=False)
-        ygen(pathData)
-        impute(pathData)
-        
-    elif len(sys.argv) == 3 and sys.argv[1] == "-v" and os.path.isdir(sys.argv[2]):
-        pathData = sys.argv[2]
-        aggregate_and_clean(pathData, verbose=True, extra=False)
-        ygen(pathData)
-        impute(pathData)
-        
-    elif len(sys.argv) == 3 and sys.argv[1] == "-v+" and os.path.isdir(sys.argv[2]):
-        pathData = sys.argv[2]
-        aggregate_and_clean(pathData, verbose=True, extra=True)
-        ygen(pathData)
-        impute(pathData)
-    
-    elif len(sys.argv) == 1:
-        pathData = r'C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\teyden-git\data\canbind_data\\'
-        aggregate_and_clean(pathData, verbose=False)
-        ygen(pathData)
-        impute(pathData)
-        convert_canbind_to_overlapping(pathData)
-    else:
-        print("Enter valid arguments\n"
-              "\t options: -v for verbose, -v+ for super verbose\n"
-              "\t path: the path to a real directory\n")
 
 
 

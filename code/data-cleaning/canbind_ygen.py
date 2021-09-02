@@ -25,7 +25,9 @@ in the ZIP provided.
 TODO: took out most of the superflous code from canbind_preprocessing_manager, which this was based on
       Runs fast, but probably could still take out more and be further optimized. 
 """
-def ygen(root_dir, debug=False):
+
+
+def y_gen(root_dir, debug=False):
     global COL_NAMES_CATEGORICAL
     global COL_NAMES_NA
     global FILENAMES
@@ -134,7 +136,7 @@ def ygen(root_dir, debug=False):
     merged_df = merged_df.reset_index(drop=True)
     
     # Rename the column that will be used for the y value (target)
-    merged_df = merged_df.rename({"QIDS_RESP_WK8_week 8":"QIDS_RESP_WK8"},axis='columns',errors='raise')
+    merged_df = merged_df.rename({"QIDS_RESP_WK8_week 8": "QIDS_RESP_WK8"}, axis='columns', errors='raise')
     merged_df['QIDS_REM_WK8'] = np.nan
     
     # Back up proceesed file before ygeneration
@@ -212,9 +214,9 @@ def extend_columns_eventbased(orig_df):
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         pathData = r'C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\teyden-git\data\canbind_data\\'
-        ygen(pathData, debug=False)
+        y_gen(pathData, debug=False)
     elif len(sys.argv) == 2 and os.path.isdir(sys.argv[1]):
-        ygen(sys.argv[1])
+        y_gen(sys.argv[1])
     else:
         print("Enter valid arguments\n"
                "\t path: the path to a real directory\n")

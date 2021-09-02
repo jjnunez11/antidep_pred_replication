@@ -30,8 +30,8 @@ Please find our data cleaning and processing code in [data-cleaning](./code/data
 The raw STAR*D and CAN-BIND data should be placed in separate folders within [data](./data/)
 
 ### Run order
-1. Generate STAR*D dataset with [stard_preprocessing_manager.py](./code/data-cleaning/stard_preprocessing_manager.py)
-2. Generate initial CAN-BIND dataset with  [stard_preprocessing_manager.py](./code/data-cleaning/canbind_preprocessing_manager.py)
+1. Generate STAR*D dataset with [stard_preprocessing.py](./code/data-cleaning/stard_preprocessing.py)
+2. Generate initial CAN-BIND dataset with  [canbind_preprocessing_manager.py](./code/data-cleaning/canbind_preprocessing_manager.py)
 3. Generate overlapping datasets with [generate_overlapping_features](./code/data-cleaning/generate_overlapping_features.py)
 
 ## Running Machine Learning Analysis
