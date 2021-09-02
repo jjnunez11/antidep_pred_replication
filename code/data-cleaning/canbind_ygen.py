@@ -146,12 +146,20 @@ def y_gen(root_dir, debug=False):
     for i, row in merged_df.iterrows():
         
         baseline_qids_sr = row['QIDS_OVERL_SEVTY_baseline']
-        week2_qids_sr = row['QIDS_OVERL_SEVTY_week 2']
         week4_qids_sr = row['QIDS_OVERL_SEVTY_week 4']
         week8_qids_sr = row['QIDS_OVERL_SEVTY_week 8']
+
+        # Find LOCF, either week 8 or week 4
+        if not(np.isnan(week8_qids_sr)):
+            locf_qids_sr = week8_qids_sr
+        elif not(np.isnan(week4_qids_sr)):
+            locf_qids_sr = week4_qids_sr
+        else:
+            # If patient does not have a week 4 or 8 qids_sr, do not generate y, they will be dropped
+            continue
         
         # Make qids-sr remission at 8 weeks from scratch
-        if any(j <= 5 for j in [week2_qids_sr, week4_qids_sr, week8_qids_sr]):
+        if locf_qids_sr <= 5:
             merged_df.at[i, 'QIDS_REM_WK8'] = 1
         else:
             merged_df.at[i, 'QIDS_REM_WK8'] = 0   
@@ -159,15 +167,16 @@ def y_gen(root_dir, debug=False):
         # Fill in any missing qids-sr response at 8 weeks
         if "QIDS_RESP_WK8" in row:
             if np.isnan(row["QIDS_RESP_WK8"]):
-                
-                
-                if any(i <= baseline_qids_sr*0.50 for i in [week2_qids_sr, week4_qids_sr, week8_qids_sr]):
+                if locf_qids_sr <= baseline_qids_sr*0.50:
                     merged_df.at[i, 'QIDS_RESP_WK8'] = 1
                 else:
                     merged_df.at[i, 'QIDS_RESP_WK8'] = 0
-                        
-                
-    
+            else:
+                if locf_qids_sr <= baseline_qids_sr*0.50:
+                    assert merged_df.at[i, 'QIDS_RESP_WK8'] == 1, "Found an error when manually checking QIDS_RESP_WK8"
+                else:
+                    assert merged_df.at[i, 'QIDS_RESP_WK8'] == 0, "Found an error when manually checking QIDS_RESP_WK8"
+
     y_wk8_resp = merged_df[['SUBJLABEL','QIDS_RESP_WK8']]
     y_wk8_resp.to_csv(root_dir + "/y_wk8_resp_canbind.csv", index=False)
     
