@@ -17,18 +17,18 @@ by default will do both
 See main() for description of arguments
 
 """
+from stard_preprocessing_globals import DIR_PROCESSED_DATA, DIR_SUBJECT_SELECTED, CSV_SUFFIX
+
 
 Q_DICT_S = dict(map(reversed, Q_DICT_C.items()))
 
 
-def convert_stard_to_overlapping(output_dir=""):
-    if output_dir == "":
-        output_dir = r"C:\Users\jjnun\Documents\Sync\Research\1_CANBIND Replication\teyden-git\data\final_datasets"  # TODO temporarily hardcode
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
+def convert_stard_to_overlapping(root_data_dir_path, holdout_label):
+    output_dir_path = os.path.join(root_data_dir_path, DIR_PROCESSED_DATA, holdout_label)
+    # Write to same dir as subject selection, as that's where the other final files are
+    subject_selected_path = os.path.join(output_dir_path, DIR_SUBJECT_SELECTED)
 
-    # df = pd.read_csv(file_path)
-    df = pd.read_csv(output_dir + "/" + "X_wk8_response_qids01__final.csv")
+    df = pd.read_csv(os.path.join(subject_selected_path, "X_tillwk4_qids_sr_" + holdout_label + CSV_SUFFIX))
 
     # Take whitelist columns first
     df = df[STARD_OVERLAPPING_VALUE_CONVERSION_MAP["whitelist"]]  ## + ["days_baseline"]]
@@ -111,8 +111,7 @@ def convert_stard_to_overlapping(output_dir=""):
     df = df.sort_index(axis=1)  # Newly added, sorts columns alphabetically so same for both matrices
     # df = df.sort_values(by=['SUBJLABEL:::subjectkey'])
     df = df.set_index(['SUBJLABEL:::subjectkey'])
-    df.to_csv(output_dir + "/X_train_stard_extval.csv", index=True)
-
+    df.to_csv(os.path.join(subject_selected_path, "X_tillwk4_overlap_qids_sr_" + holdout_label + CSV_SUFFIX), index=True)
 
 def convert_canbind_to_overlapping(output_dir=""):
     if output_dir == "":

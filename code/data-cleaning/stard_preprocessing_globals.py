@@ -313,3 +313,22 @@ VALUE_CONVERSION_MAP_IMPUTE = {
 }
 
 NEW_FEATURES = ['imput_anyanxiety', 'imput_bech', 'imput_maier', 'imput_santen', 'imput_gibbons', 'imput_hamd7', 'imput_hamdret', 'imput_hamdanx', 'imput_hamdsle', 'imput_idsc5w0', 'imput_idsc5w2', 'imput_idsc5pccg', 'imput_qidscpccg']
+
+ROW_SELECTION_PREFIX = "rs__"
+COLUMN_SELECTION_PREFIX = ROW_SELECTION_PREFIX + "cs__"
+ONE_HOT_ENCODED_PREFIX = COLUMN_SELECTION_PREFIX + "ohe__"
+VALUES_CONVERTED_PREFIX = ONE_HOT_ENCODED_PREFIX + "vc__"
+AGGREGATED_ROWS_PREFIX = VALUES_CONVERTED_PREFIX + "ag__" # Final: "rs__cs__ohe__vc__ag__" which represents the order of the pipeline
+IMPUTED_PREFIX = AGGREGATED_ROWS_PREFIX + "im__"
+
+CSV_SUFFIX = ".csv"
+
+DIR_PROCESSED_DATA = "processed_data"
+DIR_ROW_SELECTED = "row_selected_scales"
+DIR_COLUMN_SELECTED = "column_selected_scales"
+DIR_ONE_HOT_ENCODED = "one_hot_encoded_scales"
+DIR_VALUES_CONVERTED = "values_converted_scales"
+DIR_AGGREGATED_ROWS = "aggregated_rows_scales"
+DIR_IMPUTED = "imputed_scales"
+DIR_Y_MATRIX = "y_matrix"
+DIR_SUBJECT_SELECTED = "final_xy_data_matrices"

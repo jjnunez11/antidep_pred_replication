@@ -6,6 +6,10 @@ from collections import namedtuple
 import warnings
 from stard_preprocessing_globals import ORIGINAL_SCALE_NAMES, BLACK_LIST_SCALES, SCALES, VALUE_CONVERSION_MAP, \
     VALUE_CONVERSION_MAP_IMPUTE, NEW_FEATURES, COL_NAME_SUBJECTKEY
+from stard_preprocessing_globals import ROW_SELECTION_PREFIX, COLUMN_SELECTION_PREFIX, ONE_HOT_ENCODED_PREFIX, \
+    VALUES_CONVERTED_PREFIX, AGGREGATED_ROWS_PREFIX, IMPUTED_PREFIX
+from stard_preprocessing_globals import CSV_SUFFIX, DIR_PROCESSED_DATA, DIR_ROW_SELECTED, DIR_COLUMN_SELECTED, \
+    DIR_ONE_HOT_ENCODED, DIR_VALUES_CONVERTED, DIR_AGGREGATED_ROWS, DIR_IMPUTED, DIR_Y_MATRIX, DIR_SUBJECT_SELECTED
 
 """ 
 This is the main code for our preprocess for the raw STAR*D data from the NIMH, producing the 
@@ -17,25 +21,6 @@ all from there
 
 This will take in multiple text files (representing psychiatric scales) and output multiple CSV files, at least for each scale read in.
 """
-
-ROW_SELECTION_PREFIX = "rs__"
-COLUMN_SELECTION_PREFIX = ROW_SELECTION_PREFIX + "cs__"
-ONE_HOT_ENCODED_PREFIX = COLUMN_SELECTION_PREFIX + "ohe__"
-VALUES_CONVERTED_PREFIX = ONE_HOT_ENCODED_PREFIX + "vc__"
-AGGREGATED_ROWS_PREFIX = VALUES_CONVERTED_PREFIX + "ag__" # Final: "rs__cs__ohe__vc__ag__" which represents the order of the pipeline
-IMPUTED_PREFIX = AGGREGATED_ROWS_PREFIX + "im__"
-
-CSV_SUFFIX = ".csv"
-
-DIR_PROCESSED_DATA = "processed_data"
-DIR_ROW_SELECTED = "row_selected_scales"
-DIR_COLUMN_SELECTED = "column_selected_scales"
-DIR_ONE_HOT_ENCODED = "one_hot_encoded_scales"
-DIR_VALUES_CONVERTED = "values_converted_scales"
-DIR_AGGREGATED_ROWS = "aggregated_rows_scales"
-DIR_IMPUTED = "imputed_scales"
-DIR_Y_MATRIX = "y_matrix"
-DIR_SUBJECT_SELECTED = "final_xy_data_matrices"
 
 LINE_BREAK = "*************************************************************"
 
@@ -64,7 +49,7 @@ def select_rows(input_dir_path, holdout_set_ids, holdout_label='all'):
         curr_scale_path = input_dir_path + "/" + filename
 
         # Read in the txt file + preliminary processing
-        scale_df = pd.read_csv(curr_scale_path, sep='\t', skiprows=[1])  # TODO: Replace
+        scale_df = pd.read_csv(curr_scale_path, sep='\t', skiprows=[1])
         scale_df = drop_empty_columns(scale_df)
         # Drop empty columns only when checking the entire set, or will end up with different columns in holdout_set etc
         scale_df = scale_df[scale_df[COL_NAME_SUBJECTKEY].isin(holdout_set_ids)]  # Only keep in data from this set
@@ -321,7 +306,7 @@ def select_columns(root_data_dir_path,  holdout_label='all'):
         scale_df = pd.read_csv(curr_scale_path)
 
         # Drop empty columns
-        scale_df = drop_empty_columns(scale_df)
+        # scale_df = drop_empty_columns(scale_df)
 
         whitelist = SCALES[scale_name]["whitelist"]
 

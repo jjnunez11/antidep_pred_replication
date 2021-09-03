@@ -16,8 +16,10 @@ if __name__ == "__main__":
     if False:
         table = 'table3_replication'
     
-        X_matrix = "X_nolvl1drop_qids_c" # STAR*D full feature data matrix, with subjects who do not drop in level according to having QIDS-C scores
-        y_labels = "y_nolvl1drop_trdrem_qids_c"# STAR*D targets for QIDS-C TRD as defined by remission, for subjects who do not drop in level 1 according to having QIDS-C scores
+        X_matrix = "X_nolvl1drop_qids_c"  # STAR*D full feature data matrix, with subjects who do not drop in level
+        # according to having QIDS-C scores
+        y_labels = "y_nolvl1drop_trdrem_qids_c"  # STAR*D targets for QIDS-C TRD as defined by remission, for subjects
+        # who do not drop in level 1 according to having QIDS-C scores
         
         for model in ['rf', 'gbdt', "xgbt", "l2logreg"]:
             for f_select in ["all", "chi", "elas"]: 
@@ -25,25 +27,26 @@ if __name__ == "__main__":
         RunResult(runs, "cv", 'elnet', 'all', X_matrix, y_labels, table)
     
     # Table 4: External Validation
-    if False:
+    if True:
         table = 'table4_externalvalidation'
     
-        X_matrix = "X_overlap_tillwk4_qids_sr" # STAR*D dataset, only overlapping features with CAN-BIND, subjects who have qids-sr until at least week 4
+        X_matrix = "X_overlap_tillwk4_qids_sr"  # STAR*D dataset, only overlapping features with CAN-BIND, subjects
+        # who have qids-sr until at least week 4
     
         # QIDS-SR Response
-        y_labels = "y_tillwk4_wk8_resp_qids_sr"# STAR*D targets for training external validation, subjects who have qids-sr until at least week 4, targeting week 8 qids sr response
-        for model in ['rf','gbdt',"xgbt", "l2logreg", "elnet"]:
+        y_labels = "y_tillwk4_wk8_resp_qids_sr"  # STAR*D targets for training external validation, subjects who have
+        # qids-sr until at least week 4, targeting week 8 qids sr response
+        for model in ['rf', 'gbdt', "xgbt", "l2logreg", "elnet"]:
             RunResult(runs, "extval_resp", model, 'all', X_matrix, y_labels, table)
     
         # QIDS-SR Remission
-        y_labels = "y_tillwk4_wk8_rem_qids_sr"# STAR*D targets for training external validation, subjects who have qids-sr until at least week 4, targeting week 8 qids sr remission
-        for model in ['rf','gbdt',"xgbt", "l2logreg", "elnet"]:
+        y_labels = "y_tillwk4_wk8_rem_qids_sr"  # STAR*D targets for training external validation, subjects who have
+        # qids-sr until at least week 4, targeting week 8 qids sr remission
+        for model in ['rf', 'gbdt', "xgbt", "l2logreg", "elnet"]:
             RunResult(runs, "extval_rem", model, 'all', X_matrix, y_labels, table)
-            
-        
-    
+
     # Table 5: Comparisons
-    if False:
+    if True:
         table = 'table5_comparisons'
         # Results in order they appear in table
         
@@ -51,12 +54,14 @@ if __name__ == "__main__":
         RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids_c', table)
         RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_sr', 'y_nolvl1drop_trdrem_qids_sr', table)
 
-        # QIDS-C and -SR Remission, cross-validated on STAR*D, using all features of subjects who have QIDS- until week 4, and then with only the features overlapping with CANBIND
+        # QIDS-C and -SR Remission, cross-validated on STAR*D, using all features of subjects who have QIDS- until
+        # week 4, and then with only the features overlapping with CANBIND
         RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_c', 'y_wk8_rem_qids_c', table)
         RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_rem_qids_sr', table)
         RunResult(runs, "cv", 'rf', 'all', 'X_overlap_tillwk4_qids_sr', 'y_wk8_rem_qids_sr', table)
 
-        # QIDS-C and -SR Response, cross-validated on STAR*D, with subjects who have at least week 4 of QIDS-. Varied features, including overlapping and with feature selection
+        # QIDS-C and -SR Response, cross-validated on STAR*D, with subjects who have at least week 4 of QIDS-. Varied
+        # features, including overlapping and with feature selection
         RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_c', 'y_wk8_resp_qids_c', table)
         RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', table)
         RunResult(runs, "cv", 'rf', 'chi', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', table)
@@ -70,4 +75,4 @@ if __name__ == "__main__":
     # Temp runs
     # RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids_c', 'quick_randomtest')
 
-    print("Ran all succesfully!")
+    print("Ran all successfully!")

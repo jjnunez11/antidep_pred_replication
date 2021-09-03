@@ -28,13 +28,13 @@ def RunMLRun(data_name, label_name, f_select, model, evl, ensemble_n=30, n_split
         train_data = os.path.join(DATA_DIR, data_name + "_non_holdout.csv")
         train_label = os.path.join(DATA_DIR, label_name + "_non_holdout.csv")
     else:
-        test_data = os.path.join(DATA_DIR, 'canbind_X_overlap_tillwk4_qids_sr.csv')  # X data matrix over CAN-BIND, only overlapping features with STAR*D, subjects who have qids sr until at least week 4
+        test_data = os.path.join(DATA_DIR, 'X_test_cb_extval.csv')  # X data matrix over CAN-BIND, only overlapping features with STAR*D, subjects who have qids sr until at least week 4
         train_data = os.path.join(DATA_DIR, data_name + "_entire.csv")
         train_label = os.path.join(DATA_DIR, label_name + "_entire.csv")
         if evl == "extval_resp":
-            test_label = os.path.join(DATA_DIR, 'canbind_y_tillwk8_resp_qids_sr.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr response
+            test_label = os.path.join(DATA_DIR, 'y_wk8_resp_canbind.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr response
         elif evl == "extval_rem":
-            test_label = os.path.join(DATA_DIR, 'canbind_y_tillwk8_rem_qids_sr.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr remission
+            test_label = os.path.join(DATA_DIR, 'y_wk8_rem_canbind.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr remission
         elif evl == "extval_rem_randomized": # A control to make sure our extval_rem results are robust, with the targets scrambled randomly
             test_label = os.path.join(DATA_DIR, 'canbind_y_tillwk8_randomized.csv') # y matrix from canbind, with subjects as above, with targets scrambled
 
