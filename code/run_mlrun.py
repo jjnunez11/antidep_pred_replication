@@ -14,29 +14,12 @@ from sklearn.metrics import balanced_accuracy_score
 from sklearn.model_selection import KFold
 import numpy as np
 import pandas as pd
-from run_globals import DATA_DIR
-import os
 
 
-def RunMLRun(data_name, label_name, f_select, model, evl, ensemble_n=30, n_splits=10):
+def RunMLRun(train_data, train_label, test_data, test_label, f_select, model, ensemble_n=30, n_splits=10):
     """ 
     Trains and evaluates a machine learning model. Returns metrics, and models
     """
-    if evl == "cv":
-        test_data = os.path.join(DATA_DIR, data_name + "_holdout.csv")
-        test_label = os.path.join(DATA_DIR, label_name + "_holdout.csv")
-        train_data = os.path.join(DATA_DIR, data_name + "_non_holdout.csv")
-        train_label = os.path.join(DATA_DIR, label_name + "_non_holdout.csv")
-    else:
-        test_data = os.path.join(DATA_DIR, 'X_test_cb_extval.csv')  # X data matrix over CAN-BIND, only overlapping features with STAR*D, subjects who have qids sr until at least week 4
-        train_data = os.path.join(DATA_DIR, data_name + "_entire.csv")
-        train_label = os.path.join(DATA_DIR, label_name + "_entire.csv")
-        if evl == "extval_resp":
-            test_label = os.path.join(DATA_DIR, 'y_wk8_resp_canbind.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr response
-        elif evl == "extval_rem":
-            test_label = os.path.join(DATA_DIR, 'y_wk8_rem_canbind.csv') # y matrix from canbind, with subjects as above, targetting week 8 qids sr remission
-        elif evl == "extval_rem_randomized": # A control to make sure our extval_rem results are robust, with the targets scrambled randomly
-            test_label = os.path.join(DATA_DIR, 'canbind_y_tillwk8_randomized.csv') # y matrix from canbind, with subjects as above, with targets scrambled
 
     # read data and chop the header
     X_test = np.genfromtxt(test_data, delimiter=',')[1:,1:]
@@ -52,21 +35,22 @@ def RunMLRun(data_name, label_name, f_select, model, evl, ensemble_n=30, n_split
     # Assert columns are same between X and X_test
     assert (pd.read_csv(train_data).columns == pd.read_csv(test_data).columns).all(), "Columns must be same and in same order between X and X_test"
 
-
-    j=1
-    accu = np.empty([10,], dtype=float)
-    auc = np.empty([10,], dtype=float)
-    bscore = np.empty([10,], dtype=float)
-    specificity = np.empty([10,], dtype=float)
-    sensitivity = np.empty([10,], dtype=float)
-    precision = np.empty([10,], dtype=float)
-    f1 = np.empty([10,], dtype=float)
+    j = 1
+    accu = np.empty([10, ], dtype=float)
+    auc = np.empty([10, ], dtype=float)
+    bscore = np.empty([10, ], dtype=float)
+    specificity = np.empty([10, ], dtype=float)
+    sensitivity = np.empty([10, ], dtype=float)
+    precision = np.empty([10, ], dtype=float)
+    f1 = np.empty([10, ], dtype=float)
     features_n = np.empty([10,], dtype=float)
-    tps = np.empty([10,], dtype=float)
-    fps = np.empty([10,], dtype=float)
-    tns = np.empty([10,], dtype=float)
-    fns = np.empty([10,], dtype=float)
-    feature_importances =  np.empty([10,m], dtype=float)  # Store feature importances relative to the original ordering.
+    tps = np.empty([10, ], dtype=float)
+    fps = np.empty([10, ], dtype=float)
+    tns = np.empty([10, ], dtype=float)
+    fns = np.empty([10, ], dtype=float)
+    ppvs = np.empty([10, ], dtype=float)
+    npvs = np.empty([10, ], dtype=float)
+    feature_importances = np.empty([10,m], dtype=float)  # Store feature importances relative to the original ordering.
     clfs = [None]*n_splits
         
     for train_index, val_index in kf.split(X):
@@ -172,6 +156,8 @@ def RunMLRun(data_name, label_name, f_select, model, evl, ensemble_n=30, n_split
         fps[j-1] = fp/n
         fns[j-1] = fn/n
         tps[j-1] = tp/n
+        ppvs[j-1] = tp/(tp+fp)
+        npvs[j-1] = tn/(tn+fn)
         f1[j-1] = 2*precision[j-1]*sensitivity[j-1]/(precision[j-1]+sensitivity[j-1])
         feature_importances[j-1,features] = feature_importance/ensemble_n
         features_n[j-1] = features_n_fold/ensemble_n
@@ -196,8 +182,10 @@ def RunMLRun(data_name, label_name, f_select, model, evl, ensemble_n=30, n_split
     avg_f1 = sum(f1)/10
     avg_features_n = sum(features_n)/10
     avg_feature_importance = np.sum(feature_importances,axis=0)/10
+    avg_ppv = sum(ppvs)/10
+    avg_npv = sum(npvs)/10
     
-    return(avg_accu, avg_bal_acc, avg_auc, avg_sens, avg_spec, avg_prec, avg_f1, avg_features_n, avg_feature_importance, confus_mat, clfs)
+    return avg_accu, avg_bal_acc, avg_auc, avg_sens, avg_spec, avg_prec, avg_f1, avg_ppv, avg_npv, avg_features_n, avg_feature_importance, confus_mat, clfs
 
 
 def xgbt_feature_importance(n_features, clf, impt_type='gain'):

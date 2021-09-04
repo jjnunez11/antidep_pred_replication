@@ -1,4 +1,4 @@
-from run_result import RunResult
+from run_result import run_result
 
 """
 Top level script to produce results from our paper
@@ -27,52 +27,53 @@ if __name__ == "__main__":
         RunResult(runs, "cv", 'elnet', 'all', X_matrix, y_labels, table)
     
     # Table 4: External Validation
-    if True:
+    if False:
         table = 'table4_externalvalidation'
     
-        X_matrix = "X_overlap_tillwk4_qids_sr"  # STAR*D dataset, only overlapping features with CAN-BIND, subjects
+        X_matrix = "X_tillwk4_overlap_qids_sr"  # STAR*D dataset, only overlapping features with CAN-BIND, subjects
         # who have qids-sr until at least week 4
     
         # QIDS-SR Response
-        y_labels = "y_tillwk4_wk8_resp_qids_sr"  # STAR*D targets for training external validation, subjects who have
+        y_labels = "y_wk8_resp_qids_sr"  # STAR*D targets for training external validation, subjects who have
         # qids-sr until at least week 4, targeting week 8 qids sr response
         for model in ['rf', 'gbdt', "xgbt", "l2logreg", "elnet"]:
-            RunResult(runs, "extval_resp", model, 'all', X_matrix, y_labels, table)
+            run_result(runs, "extval_resp", model, 'all', X_matrix, y_labels, table)
     
         # QIDS-SR Remission
         y_labels = "y_tillwk4_wk8_rem_qids_sr"  # STAR*D targets for training external validation, subjects who have
         # qids-sr until at least week 4, targeting week 8 qids sr remission
         for model in ['rf', 'gbdt', "xgbt", "l2logreg", "elnet"]:
-            RunResult(runs, "extval_rem", model, 'all', X_matrix, y_labels, table)
+            run_result(runs, "extval_rem", model, 'all', X_matrix, y_labels, table)
 
     # Table 5: Comparisons
-    if True:
+    if False:
         table = 'table5_comparisons'
         # Results in order they appear in table
         
         # TRD with QIDS-C and QIDS-R Remission, all STAR*D features, must not drop in lvl 1, as in Nie et al
-        RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids_c', table)
-        RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_sr', 'y_nolvl1drop_trdrem_qids_sr', table)
+        run_result(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids_c', table)
+        run_result(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_sr', 'y_nolvl1drop_trdrem_qids_sr', table)
 
         # QIDS-C and -SR Remission, cross-validated on STAR*D, using all features of subjects who have QIDS- until
         # week 4, and then with only the features overlapping with CANBIND
-        RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_c', 'y_wk8_rem_qids_c', table)
-        RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_rem_qids_sr', table)
-        RunResult(runs, "cv", 'rf', 'all', 'X_overlap_tillwk4_qids_sr', 'y_wk8_rem_qids_sr', table)
+        run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_c', 'y_wk8_rem_qids_c', table)
+        run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_rem_qids_sr', table)
+        run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_overlap_qids_sr', 'y_wk8_rem_qids_sr', table)
 
         # QIDS-C and -SR Response, cross-validated on STAR*D, with subjects who have at least week 4 of QIDS-. Varied
         # features, including overlapping and with feature selection
-        RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_c', 'y_wk8_resp_qids_c', table)
-        RunResult(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', table)
-        RunResult(runs, "cv", 'rf', 'chi', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', table)
-        RunResult(runs, "cv", 'rf', 'elas', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', table)
-        RunResult(runs, "cv", 'rf', 'all', 'X_overlap_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', table)
+        run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_c', 'y_wk8_resp_qids_c', table)
+        run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', table)
+        run_result(runs, "cv", 'rf', 'chi', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', table)
+        run_result(runs, "cv", 'rf', 'elas', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', table)
+        run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_overlap_qids_sr', 'y_wk8_resp_qids_sr', table)
         
         # External Validation with QIDS-SR Remission and Response on CANBIND
-        RunResult(runs, "extval_rem", 'rf', 'all', 'X_overlap_tillwk4_qids_sr', 'y_tillwk4_wk8_rem_qids_sr', table)
-        RunResult(runs, "extval_resp", 'rf', 'all', 'X_overlap_tillwk4_qids_sr', 'y_tillwk4_wk8_resp_qids_sr', table)
+        run_result(runs, "extval_rem", 'rf', 'all', 'X_tillwk4_overlap_qids_sr', 'y_tillwk4_wk8_rem_qids_sr', table)
+        run_result(runs, "extval_resp", 'rf', 'all', 'X_tillwk4_overlap_qids_sr', 'y_tillwk4_wk8_resp_qids_sr', table)
 
     # Temp runs
-    # RunResult(runs, "cv", 'rf', 'all', 'X_nolvl1drop_qids_c', 'y_nolvl1drop_trdrem_qids_c', 'quick_randomtest')
+    # run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', 'quick')
+    # run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_rem_qids_sr', 'quick')
 
     print("Ran all successfully!")

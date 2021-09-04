@@ -178,10 +178,10 @@ def y_gen(root_dir, debug=False):
                     assert merged_df.at[i, 'QIDS_RESP_WK8'] == 0, "Found an error when manually checking QIDS_RESP_WK8"
 
     y_wk8_resp = merged_df[['SUBJLABEL','QIDS_RESP_WK8']]
-    y_wk8_resp.to_csv(root_dir + "/y_wk8_resp_canbind.csv", index=False)
+    y_wk8_resp.to_csv(root_dir + "/y_wk8_resp_qids_sr_canbind.csv", index=False)
     
     y_wk8_rem = merged_df[['SUBJLABEL','QIDS_REM_WK8']]
-    y_wk8_rem.to_csv(root_dir + "/y_wk8_rem_canbind.csv", index=False)
+    y_wk8_rem.to_csv(root_dir + "/y_wk8_rem_qids_sr_canbind.csv", index=False)
     
     # Save the version containing NaN values just for debugging, not otherwise used
     if debug: merged_df.to_csv(root_dir + "/canbind-clean-aggregated-data.with-id.contains-blanks-ygen.csv")

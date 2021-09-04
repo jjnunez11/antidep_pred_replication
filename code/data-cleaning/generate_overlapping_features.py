@@ -180,7 +180,7 @@ def convert_canbind_to_overlapping(output_dir=""):
     df = df.reset_index(drop=True)
     df = df.sort_index(axis=1)  # Newly added, sorts columns alphabetically so same for both matrices
     df = df.set_index(['SUBJLABEL:::subjectkey'])
-    df.to_csv(output_dir + "/X_test_cb_extval.csv", index=True)
+    df.to_csv(output_dir + "/X_tillwk4_overlap_canbind", index=True)
 
 
 def add_new_imputed_features_canbind(df, row, i):
