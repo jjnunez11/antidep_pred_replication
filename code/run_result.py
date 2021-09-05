@@ -35,11 +35,11 @@ def run_result(runs, evl, model, f_select, data_name, label_name, table=""):
         # features with STAR*D, subjects who have qids sr until at least week 4
         if evl == "extval_resp":
             test_label = os.path.join(DATA_DIR,
-                                      'y_wk8_resp_qic_sr_canbind.csv')  # y matrix from canbind, with subjects as
+                                      'y_wk8_resp_qids_sr_canbind.csv')  # y matrix from canbind, with subjects as
             # above, targeting week 8 qids sr response
         elif evl == "extval_rem":
             test_label = os.path.join(DATA_DIR,
-                                      'y_wk8_rem_qic_sr_canbind.csv')  # y matrix from canbind, with subjects as
+                                      'y_wk8_rem_qids_sr_canbind.csv')  # y matrix from canbind, with subjects as
             # above, targeting week 8 qids sr remission
         elif evl == "extval_rem_randomized":  # A control to make sure our extval_rem results are robust, with the
             # targets scrambled randomly

@@ -870,8 +870,8 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
         # Reversed 0 and 1 from previous; 1 is now TRD, 0 is non-TRD, as we're predicting TRD. 
         if scale_name == "qids01":
             
-            over21_df = scale_df.loc[scale_df['days_baseline'] > 21] # New, use this to check subjects remained 4 weeks. 
-            
+            over21_df = scale_df.loc[scale_df['days_baseline'] > 21] # New, use this to check subjects remained 4 weeks.
+
             for vers in ['c', 'sr']:
                 # Temporary dataframes to store TRD, remission, or response,
                 # and then assign to either Clinician or Self-Report
@@ -963,12 +963,14 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                 i = 0
                 for subject_id, group in scale_df.groupby(['subjectkey']):
                     if subject_id in over21_df['subjectkey'].values:  # Only generate y if this subject stayed in
+                        print(subject_id)
                         # study for 4 weeks
 
                         # Grab the relevant entries between week 0 and week 8 in the study
                         subset_wk8 = group[(group['version_form'] == version_form) & (group['days_baseline'] <= 77)]
                         # Drop blank/NaN entries
                         subset_wk8 = subset_wk8[subset_wk8['qstot'].notna()]
+                        print(subset_wk8[["subjectkey", "qstot"]])
 
                         # Skip subject (will be dropped) if does not have any relevant entries
                         if subset_wk8.shape[0] == 0:

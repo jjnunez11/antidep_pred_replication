@@ -10,7 +10,7 @@ Adjust number of runs below
 """
 
 if __name__ == "__main__":
-    runs = 1
+    runs = 10
 
     # Table 3: Replication 
     if False:
@@ -23,8 +23,8 @@ if __name__ == "__main__":
         
         for model in ['rf', 'gbdt', "xgbt", "l2logreg"]:
             for f_select in ["all", "chi", "elas"]: 
-                RunResult(runs, "cv", model, f_select, X_matrix, y_labels, table)
-        RunResult(runs, "cv", 'elnet', 'all', X_matrix, y_labels, table)
+                run_result(runs, "cv", model, f_select, X_matrix, y_labels, table)
+        run_result(runs, "cv", 'elnet', 'all', X_matrix, y_labels, table)
     
     # Table 4: External Validation
     if False:
@@ -40,13 +40,13 @@ if __name__ == "__main__":
             run_result(runs, "extval_resp", model, 'all', X_matrix, y_labels, table)
     
         # QIDS-SR Remission
-        y_labels = "y_tillwk4_wk8_rem_qids_sr"  # STAR*D targets for training external validation, subjects who have
+        y_labels = "y_wk8_rem_qids_sr"  # STAR*D targets for training external validation, subjects who have
         # qids-sr until at least week 4, targeting week 8 qids sr remission
         for model in ['rf', 'gbdt', "xgbt", "l2logreg", "elnet"]:
             run_result(runs, "extval_rem", model, 'all', X_matrix, y_labels, table)
 
     # Table 5: Comparisons
-    if False:
+    if True:
         table = 'table5_comparisons'
         # Results in order they appear in table
         
@@ -69,8 +69,8 @@ if __name__ == "__main__":
         run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_overlap_qids_sr', 'y_wk8_resp_qids_sr', table)
         
         # External Validation with QIDS-SR Remission and Response on CANBIND
-        run_result(runs, "extval_rem", 'rf', 'all', 'X_tillwk4_overlap_qids_sr', 'y_tillwk4_wk8_rem_qids_sr', table)
-        run_result(runs, "extval_resp", 'rf', 'all', 'X_tillwk4_overlap_qids_sr', 'y_tillwk4_wk8_resp_qids_sr', table)
+        run_result(runs, "extval_rem", 'rf', 'all', 'X_tillwk4_overlap_qids_sr', 'y_wk8_rem_qids_sr', table)
+        run_result(runs, "extval_resp", 'rf', 'all', 'X_tillwk4_overlap_qids_sr', 'y_wk8_resp_qids_sr', table)
 
     # Temp runs
     # run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', 'quick')
