@@ -1018,8 +1018,10 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                 else:
                     raise ValueError("Version must be c, clinician, or sr, self-rated")
             
-    y_nolvl1drop_trdrem_qids01_c.to_csv(os.path.join(output_y_dir_path, "y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX), index=False)
-    y_nolvl1drop_trdrem_qids01_sr.to_csv(os.path.join(output_y_dir_path, "y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX), index=False)
+    y_nolvl1drop_trdrem_qids01_c.to_csv(os.path.join(output_y_dir_path,
+                                                     "y_nolvl1drop_trdrem_qids01_c" + CSV_SUFFIX), index=False)
+    y_nolvl1drop_trdrem_qids01_sr.to_csv(os.path.join(output_y_dir_path,
+                                                      "y_nolvl1drop_trdrem_qids01_sr" + CSV_SUFFIX), index=False)
 
     y_wk8_resp_qids_c.to_csv(os.path.join(output_y_dir_path, "y_wk8_resp_qids_c" + CSV_SUFFIX), index=False)
     y_wk8_resp_qids_sr.to_csv(os.path.join(output_y_dir_path, "y_wk8_resp_qids_sr" + CSV_SUFFIX), index=False)
