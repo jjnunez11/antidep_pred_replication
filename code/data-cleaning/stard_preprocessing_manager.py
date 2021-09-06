@@ -869,6 +869,8 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
 
         # Reversed 0 and 1 from previous; 1 is now TRD, 0 is non-TRD, as we're predicting TRD. 
         if scale_name == "qids01":
+            
+            over21_df = scale_df.loc[scale_df['days_baseline'] > 21] # New, use this to check subjects remained 4 weeks.
 
             for vers in ['c', 'sr']:
                 # Temporary dataframes to store TRD, remission, or response,
@@ -886,13 +888,11 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                 
                 i = 0
                 for subject_id, group in scale_df.groupby(['subjectkey']):
-                    if subject_id in scale_df['subjectkey'].values:
-                        # weeks
+                    if subject_id in over21_df['subjectkey'].values: # Only generate y if this subject stayed in
+                        # study for 4 weeks
+
                         # Generate TRD status. Based closely on a snippet provided by Qingqin Li. It does seem to vary
                         # slight from the Nie et al paper.
-                        print(f'{subject_id} and version: {version_form}')
-
-                        y_nolvl1drop_trdrem_qids01.loc[i,"subjectkey"] = subject_id
 
                         # Make subset of entries for this subject in level 1 and in 2 or 2.1
                         subset_lvl1 = group[(group['version_form'] == version_form) & (group['level'] == "Level 1")]
@@ -901,9 +901,6 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                         # Drop NaN entries
                         subset_lvl1 = subset_lvl1[subset_lvl1['qstot'].notna()]
                         subset_lvl2 = subset_lvl2[subset_lvl2['qstot'].notna()]
-
-                        print(subset_lvl1[["subjectkey", "qstot"]])
-                        print(subset_lvl2[["subjectkey", "qstot"]])
 
                         if subset_lvl1.shape[0] == 0 and subset_lvl2.shape[0] == 0:
                             # Skip this subject if no entries in either
@@ -926,8 +923,6 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                             elif locf_lvl1 >= 6 and locf_lvl1_day > 21 and baseline_lvl1 > 5:
                                 remission_lvl1 = 'NO'
 
-                            print(f'remission_lvl1: {remission_lvl1}')
-
                         # Level 2 Remission
                         remission_lvl2 = 'MISSING'
                         if subset_lvl2.shape[0] != 0:
@@ -943,26 +938,24 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                             if baseline_lvl2 < 6:
                                 ValueError('woh there was a baseline value less than 5! in Level 2!')
 
-                            print(sorted_lvl2[['days_baseline', 'qstot']])
-                            print(f'locf_lvl2: {locf_lvl2}, baseline_lvl2 {baseline_lvl2} and lvl2_days_in {lvl2_days_in} ')
-
                             if locf_lvl2 <= 5 and baseline_lvl2 > 5:
                                 remission_lvl2 = 'YES'
                             elif locf_lvl2 >= 6 and lvl2_days_in > 21 and baseline_lvl2 > 5:
                                 remission_lvl2 = 'NO'
 
-                            print(f'remission_lvl2: {remission_lvl2}')
-
                         # Write out based on remission or reaching Level 2. Use same logic as provided by Nie et al
-                        # code snippet, which could be simplified
-
+                        # code snippet, which could be simplified.
                         if remission_lvl1 == 'YES':
+                            y_nolvl1drop_trdrem_qids01.loc[i, "subjectkey"] = subject_id
                             y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
                         elif remission_lvl1 == 'NO' and remission_lvl2 == 'NO':
+                            y_nolvl1drop_trdrem_qids01.loc[i, "subjectkey"] = subject_id
                             y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 1
                         elif remission_lvl1 == 'NO' and remission_lvl2 == 'YES':
+                            y_nolvl1drop_trdrem_qids01.loc[i, "subjectkey"] = subject_id
                             y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
                         elif remission_lvl1 == 'MISSING' and remission_lvl2 == 'YES':
+                            y_nolvl1drop_trdrem_qids01.loc[i, "subjectkey"] = subject_id
                             y_nolvl1drop_trdrem_qids01.loc[i, "target"] = 0
 
                         i += 1
@@ -971,15 +964,13 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                 # Referred to as Week 8 as it is used to compare/ext validate  with CAN-BIND week 8
                 i = 0
                 for subject_id, group in scale_df.groupby(['subjectkey']):
-                    if subject_id in scale_df['subjectkey'].values:  # Only generate y if this subject stayed in
-
+                    if subject_id in over21_df['subjectkey'].values:  # Only generate y if this subject stayed in
                         # study for 4 weeks
 
                         # Grab the relevant entries between week 0 and week 8 in the study
                         subset_wk8 = group[(group['version_form'] == version_form) & (group['days_baseline'] <= 77)]
                         # Drop blank/NaN entries
                         subset_wk8 = subset_wk8[subset_wk8['qstot'].notna()]
-
 
                         # Skip subject (will be dropped) if does not have any relevant entries
                         if subset_wk8.shape[0] == 0:

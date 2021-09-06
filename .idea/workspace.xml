@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5f792933-6650-4a4a-bd90-aa2ae92261a0" name="Default Changelist" comment="Have found a bug with the y-targets, will need to fix">
+    <list default="true" id="5f792933-6650-4a4a-bd90-aa2ae92261a0" name="Default Changelist" comment="fixing weird target gen bug to match unit tests">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/data-cleaning/stard_preprocessing_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/data-cleaning/stard_preprocessing_manager.py" afterDir="false" />
     </list>
@@ -36,7 +36,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="db215993275283d1ee619bc4599977e5ccb522db" />
+        <entry key="$PROJECT_DIR$" value="post_publish" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -181,7 +181,7 @@
       <workItem from="1630535764346" duration="5825000" />
       <workItem from="1630603529112" duration="793000" />
       <workItem from="1630605388509" duration="8478000" />
-      <workItem from="1630616009702" duration="22494000" />
+      <workItem from="1630616009702" duration="20627000" />
     </task>
     <task id="LOCAL-00001" summary="Post publishing, trying some modifications">
       <created>1629999352258</created>
@@ -330,14 +330,7 @@
       <option name="project" value="LOCAL" />
       <updated>1630783701858</updated>
     </task>
-    <task id="LOCAL-00022" summary="Have found a bug with the y-targets, will need to fix">
-      <created>1630864602209</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1630864602209</updated>
-    </task>
-    <option name="localTasksCounter" value="23" />
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TodoView">
@@ -363,7 +356,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/master" />
+                        <option value="post_publish" />
                       </list>
                     </value>
                   </entry>
@@ -398,11 +391,10 @@
     <MESSAGE value="Initial checking complete, will do further unit tests down the road to double check y-gen for both stard and cabind after at/locf fix" />
     <MESSAGE value="Fixed generate overlapping to work with star*d processing changes" />
     <MESSAGE value="Holdout and locf bugs fully fixed. Will run a test run through everything" />
-    <MESSAGE value="Have found a bug with the y-targets, will need to fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="Have found a bug with the y-targets, will need to fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Holdout and locf bugs fully fixed. Will run a test run through everything" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/antidep_pred_replication$run_results.coverage" NAME="run_results Coverage Results" MODIFIED="1630818434304" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
+    <SUITE FILE_PATH="coverage/antidep_pred_replication$run_results.coverage" NAME="run_results Coverage Results" MODIFIED="1630954501685" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
     <SUITE FILE_PATH="coverage/antidep_pred_replication$canbind_preprocessor.coverage" NAME="canbind_preprocessor Coverage Results" MODIFIED="1630609600020" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/data-cleaning" />
   </component>
 </project>
