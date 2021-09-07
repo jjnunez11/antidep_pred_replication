@@ -33,7 +33,15 @@ def RunMLRun(train_data, train_label, test_data, test_label, f_select, model, en
     kf = KFold(n_splits, shuffle=True)
 
     # Assert columns are same between X and X_test
-    assert (pd.read_csv(train_data).columns == pd.read_csv(test_data).columns).all(), "Columns must be same and in same order between X and X_test"
+    error_msg = f"Columns must be same and in same order between X and X_test, but these are different: " \
+        f"\n {train_data} \n {test_data} "
+
+    try:
+        assert (pd.read_csv(train_data).columns == pd.read_csv(test_data).columns).all(), error_msg
+    except ValueError as e:
+        print(error_msg)
+        print(e)
+
 
     j = 1
     accu = np.empty([10, ], dtype=float)

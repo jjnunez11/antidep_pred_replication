@@ -279,16 +279,14 @@ root_data_dir_path is the path to the root of the folder containing the original
 
 def select_columns(root_data_dir_path,  holdout_label='all'):
     output_dir_path = os.path.join(root_data_dir_path, DIR_PROCESSED_DATA, holdout_label)
-    output_row_selected_dir_path = os.path.join(output_dir_path, DIR_ROW_SELECTED)
+    input_row_selected_dir_path = os.path.join(output_dir_path, DIR_ROW_SELECTED)
     output_column_selected_dir_path = os.path.join(output_dir_path, DIR_COLUMN_SELECTED)
 
-    input_dir_path = output_row_selected_dir_path
+    input_dir_path = input_row_selected_dir_path
 
     print("\n--------------------------------2. COLUMN SELECTION-----------------------------------\n")
 
     for filename in os.listdir(input_dir_path):
-        if not os.path.exists(output_dir_path):
-            os.mkdir(output_dir_path)
         if not os.path.exists(output_column_selected_dir_path):
             os.mkdir(output_column_selected_dir_path)
 
@@ -296,7 +294,7 @@ def select_columns(root_data_dir_path,  holdout_label='all'):
         if "rs" != filename.split("__")[0]:
             continue
 
-        curr_scale_path = input_dir_path + "/" + filename
+        curr_scale_path = os.path.join(input_dir_path, filename)
 
         scale_name = filename.split(".")[0].split("__")[-1]
         print(LINE_BREAK)
@@ -307,6 +305,10 @@ def select_columns(root_data_dir_path,  holdout_label='all'):
 
         # Drop empty columns
         # scale_df = drop_empty_columns(scale_df)
+        if scale_name == 'ccv01_w2':
+            print('After read here are the cols:')
+            print(scale_df.columns)
+
 
         whitelist = SCALES[scale_name]["whitelist"]
 
@@ -316,6 +318,10 @@ def select_columns(root_data_dir_path,  holdout_label='all'):
 
         # Select columns in the whitelist
         scale_df = scale_df[whitelist]
+
+        if scale_name == 'ccv01_w2':
+            print('Here are cols before write:')
+            print(scale_df.columns)
 
         output_file_name = COLUMN_SELECTION_PREFIX + scale_name
 

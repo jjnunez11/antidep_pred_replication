@@ -10,10 +10,10 @@ Adjust number of runs below
 """
 
 if __name__ == "__main__":
-    runs = 10
+    runs = 1
 
     # Table 3: Replication 
-    if False:
+    if True:
         table = 'table3_replication'
     
         X_matrix = "X_nolvl1drop_qids_c"  # STAR*D full feature data matrix, with subjects who do not drop in level
@@ -27,7 +27,7 @@ if __name__ == "__main__":
         run_result(runs, "cv", 'elnet', 'all', X_matrix, y_labels, table)
     
     # Table 4: External Validation
-    if False:
+    if True:
         table = 'table4_externalvalidation'
     
         X_matrix = "X_tillwk4_overlap_qids_sr"  # STAR*D dataset, only overlapping features with CAN-BIND, subjects
