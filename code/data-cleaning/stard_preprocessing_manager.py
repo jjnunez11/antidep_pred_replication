@@ -10,6 +10,7 @@ from stard_preprocessing_globals import ROW_SELECTION_PREFIX, COLUMN_SELECTION_P
     VALUES_CONVERTED_PREFIX, AGGREGATED_ROWS_PREFIX, IMPUTED_PREFIX
 from stard_preprocessing_globals import CSV_SUFFIX, DIR_PROCESSED_DATA, DIR_ROW_SELECTED, DIR_COLUMN_SELECTED, \
     DIR_ONE_HOT_ENCODED, DIR_VALUES_CONVERTED, DIR_AGGREGATED_ROWS, DIR_IMPUTED, DIR_Y_MATRIX, DIR_SUBJECT_SELECTED
+import copy
 
 """ 
 This is the main code for our preprocess for the raw STAR*D data from the NIMH, producing the 
@@ -303,14 +304,9 @@ def select_columns(root_data_dir_path,  holdout_label='all'):
         # Read in the txt file + preliminary processing
         scale_df = pd.read_csv(curr_scale_path)
 
-        # Drop empty columns
-        # scale_df = drop_empty_columns(scale_df)
-        if scale_name == 'ccv01_w2':
-            print('After read here are the cols:')
-            print(scale_df.columns)
-
-
-        whitelist = SCALES[scale_name]["whitelist"]
+        # Fixed a bug where global SCALES was being modified
+        scales_copy = copy.deepcopy(SCALES)
+        whitelist = scales_copy[scale_name]["whitelist"]
 
         # Add subject key so that you know which subject it is
         if scale_name != "qids01_w0c":
@@ -318,10 +314,6 @@ def select_columns(root_data_dir_path,  holdout_label='all'):
 
         # Select columns in the whitelist
         scale_df = scale_df[whitelist]
-
-        if scale_name == 'ccv01_w2':
-            print('Here are cols before write:')
-            print(scale_df.columns)
 
         output_file_name = COLUMN_SELECTION_PREFIX + scale_name
 
