@@ -113,13 +113,16 @@ def convert_stard_to_overlapping(root_data_dir_path, holdout_label):
     df = df.set_index(['SUBJLABEL:::subjectkey'])
     df.to_csv(os.path.join(subject_selected_path, "X_tillwk4_overlap_qids_sr_" + holdout_label + CSV_SUFFIX), index=True)
 
-def convert_canbind_to_overlapping(output_dir=""):
-    if output_dir == "":
-        output_dir = r"C:\Users\jjnun\Documents\Sync\Research\1_CANBIND Replication\teyden-git\data\canbind_data_full_auto"  # TODO temporarily hardcode
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
+def convert_canbind_to_overlapping(root_dir):
+    data_dir = os.path.join(root_dir, "processed_data")
+    out_dir_final_xy_data_matrices = os.path.join(data_dir, "final_xy_data_matrices\\")
 
-    orig_df = pd.read_csv(output_dir + "/canbind_imputed.csv")
+    input_filename = os.path.join(out_dir_final_xy_data_matrices, "X_tillwk4_canbind.csv")
+    try:
+        orig_df = pd.read_csv(input_filename)
+    except:
+        raise Exception(f'Could not read X_tillwk4_canbind.csv in {out_dir_final_xy_data_matrices}')
+
     # Drop index column in present
     if "Unnamed: 0" in orig_df:
         df = orig_df.drop(["Unnamed: 0"], axis=1)
@@ -180,7 +183,7 @@ def convert_canbind_to_overlapping(output_dir=""):
     df = df.reset_index(drop=True)
     df = df.sort_index(axis=1)  # Newly added, sorts columns alphabetically so same for both matrices
     df = df.set_index(['SUBJLABEL:::subjectkey'])
-    df.to_csv(output_dir + "/X_tillwk4_overlap_canbind", index=True)
+    df.to_csv(out_dir_final_xy_data_matrices + "X_tillwk4_overlap_canbind.csv", index=True)
 
 
 def add_new_imputed_features_canbind(df, row, i):

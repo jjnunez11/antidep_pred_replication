@@ -35,6 +35,15 @@ def y_gen(root_dir, debug=False):
     global NUM_DATA_ROWS
     global NUM_DATA_COLUMNS
 
+    # Setup directories to match STAR*D processing
+    out_dir = os.path.join(root_dir, "processed_data")
+    if not os.path.exists(out_dir):
+        os.mkdir(out_dir)
+    out_dir_final_xy_data_matrices = os.path.join(out_dir, "final_xy_data_matrices")
+    if not os.path.exists(out_dir_final_xy_data_matrices):
+        os.mkdir(out_dir_final_xy_data_matrices)
+
+
     col_names_categorical = {}
     col_names_na = {}
 
@@ -97,7 +106,7 @@ def y_gen(root_dir, debug=False):
     merged_df = merged_df.sort_values(by=[COL_NAME_PATIENT_ID])
 
     # Back up full merged file for debugging purposes
-    if debug: merged_df.to_csv(root_dir + "/merged-data.unprocessed_ygen.csv")
+    if debug: merged_df.to_csv(out_dir + "/merged-data.unprocessed_ygen.csv")
 
     #### FILTER ROWS AND COLUMNS ####
 
@@ -140,7 +149,7 @@ def y_gen(root_dir, debug=False):
     merged_df['QIDS_REM_WK8'] = np.nan
     
     # Back up proceesed file before ygeneration
-    if debug: merged_df.to_csv(root_dir + "/merged-data_processed_ygen.csv")
+    if debug: merged_df.to_csv(out_dir + "/merged-data_processed_ygen.csv")
     
     # Replace missing "QIDS_RESP_WK8" values by manually checking criteria
     for i, row in merged_df.iterrows():
@@ -178,13 +187,13 @@ def y_gen(root_dir, debug=False):
                     assert merged_df.at[i, 'QIDS_RESP_WK8'] == 0, "Found an error when manually checking QIDS_RESP_WK8"
 
     y_wk8_resp = merged_df[['SUBJLABEL','QIDS_RESP_WK8']]
-    y_wk8_resp.to_csv(root_dir + "/y_wk8_resp_qids_sr_canbind.csv", index=False)
+    y_wk8_resp.to_csv(out_dir_final_xy_data_matrices + "/y_wk8_resp_qids_sr_canbind.csv", index=False)
     
     y_wk8_rem = merged_df[['SUBJLABEL','QIDS_REM_WK8']]
-    y_wk8_rem.to_csv(root_dir + "/y_wk8_rem_qids_sr_canbind.csv", index=False)
+    y_wk8_rem.to_csv(out_dir_final_xy_data_matrices + "/y_wk8_rem_qids_sr_canbind.csv", index=False)
     
     # Save the version containing NaN values just for debugging, not otherwise used
-    if debug: merged_df.to_csv(root_dir + "/canbind-clean-aggregated-data.with-id.contains-blanks-ygen.csv")
+    if debug: merged_df.to_csv(out_dir + "/canbind-clean-aggregated-data.with-id.contains-blanks-ygen.csv")
 
 
 

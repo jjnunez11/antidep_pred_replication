@@ -37,6 +37,14 @@ def aggregate_and_clean(root_dir, verbose=False, extra=False):
     global NUM_DATA_FILES
     global NUM_DATA_ROWS
     global NUM_DATA_COLUMNS
+
+    # Setup directories to match STAR*D processing
+    out_dir = os.path.join(root_dir, "processed_data")
+    if not os.path.exists(out_dir):
+        os.mkdir(out_dir)
+    out_dir_clean_aggregated = os.path.join(out_dir, "clean_aggregated")
+    if not os.path.exists(out_dir_clean_aggregated):
+        os.mkdir(out_dir_clean_aggregated)
     
     uniq_columns = {}
     col_names_categorical = {}
@@ -51,6 +59,9 @@ def aggregate_and_clean(root_dir, verbose=False, extra=False):
     merged_df = pd.DataFrame([])
 
     for subdir, dirs, files in os.walk(root_dir):
+
+
+
         for filename in files:
             file_path = os.path.join(subdir, filename)
 
@@ -127,7 +138,7 @@ def aggregate_and_clean(root_dir, verbose=False, extra=False):
     merged_df = merged_df.sort_values(by=[COL_NAME_PATIENT_ID])
 
     # Back up full merged file for debugging purposes
-    if verbose: merged_df.to_csv(root_dir + "/merged-data.unprocessed.csv")
+    if verbose: merged_df.to_csv(out_dir + "/merged-data.unprocessed.csv")
 
     #### FILTER ROWS AND COLUMNS ####
 
@@ -162,15 +173,15 @@ def aggregate_and_clean(root_dir, verbose=False, extra=False):
 
     # Finalize the blacklist, then do a final drop of columns (original ones before one-hot and blacklist columns)
     finalize_blacklist()
-    #for col in merged_df.columns:
-    #    print(col)
-    # merged_df.drop(COL_NAMES_BLACKLIST_UNIQS, axis=1, inplace=True)
 
+    # Recent addition, I believe due to pandas update, some of cols in blacklist will no longer be in df, so
+    # instead just try to drop, and if not there, continue
     for col in COL_NAMES_BLACKLIST_UNIQS:
         try:
             merged_df.drop(col, axis=1, inplace=True)
         except KeyError:
-            print(f'col: {col} was not found!')
+            # print(f'col: {col} was not found!')
+            continue
     
     # Eliminate invalid subjects in both X and y (those who don't make it to week 8)
     merged_df = get_valid_subjects(merged_df)
@@ -191,7 +202,7 @@ def aggregate_and_clean(root_dir, verbose=False, extra=False):
     # Replace "week 2" with "week2" in column names
     merged_df = merged_df.rename(columns=lambda x: re.sub('week 2','week2',x))
     # Write the data that has been cleaned and aggregated, contains blanks so needs imputation
-    merged_df.to_csv(root_dir + "/canbind_clean_aggregated.csv", index=False)
+    merged_df.to_csv(out_dir_clean_aggregated + "/canbind_clean_aggregated.csv", index=False)
 
     if verbose:
         UNIQ_COLUMNS = uniq_columns

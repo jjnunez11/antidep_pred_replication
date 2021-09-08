@@ -11,24 +11,33 @@ Takes in can_bind data matrix containing blanks (produced by canbind_data_proces
 Takes as an argument the preprocessed CAN-BIND data, or if no arguments uses
 the default path hard-coded below
 """
-def impute(data_dir):
-    input_file_name = data_dir + "/" + '/canbind_clean_aggregated.csv'
-    
-    
+def impute(root_dir):
+    # Setup directories to match STAR*D processing
+    data_dir = os.path.join(root_dir, "processed_data")
+    input_dir = os.path.join(data_dir, "clean_aggregated")
+    out_dir_final_xy_data_matrices = os.path.join(data_dir, "final_xy_data_matrices")
+    if not os.path.exists(out_dir_final_xy_data_matrices):
+        os.mkdir(out_dir_final_xy_data_matrices)
+
+    input_file_name = os.path.join(input_dir, 'canbind_clean_aggregated.csv')
+
     # Read in the csv file
-    df = pd.read_csv(input_file_name)
-    
+    try:
+        df = pd.read_csv(input_file_name)
+    except:
+        print(f"Expected to find canbind_clean_aggregated.csv in {input_dir}")
+
     # Handle replace with mode or median
     df = replace_with_median(df, list(VALUE_CONVERSION_MAP_IMPUTE["blank_to_median"]["col_names"]))
-    #df = replace_with_mode(df, list(VALUE_CONVERSION_MAP_IMPUTE["blank_to_mode"]["col_names"]))
+    # df = replace_with_mode(df, list(VALUE_CONVERSION_MAP_IMPUTE["blank_to_mode"]["col_names"]))
     
     # Handle direct value conversions (NaN to a specific number)
-    ##blank_to_one_config = VALUE_CONVERSION_MAP_IMPUTE["blank_to_one"]
-    ##blank_to_twenty_config = VALUE_CONVERSION_MAP_IMPUTE["blank_to_twenty"]
+    # blank_to_one_config = VALUE_CONVERSION_MAP_IMPUTE["blank_to_one"]
+    # blank_to_twenty_config = VALUE_CONVERSION_MAP_IMPUTE["blank_to_twenty"]
     blank_to_zero_config = VALUE_CONVERSION_MAP_IMPUTE["blank_to_zero"]
     df = replace(df, list(blank_to_zero_config["col_names"]), blank_to_zero_config["conversion_map"])
-    ##agg_df = replace(agg_df, list(blank_to_one_config["col_names"]), blank_to_one_config["conversion_map"])
-    ##agg_df = replace(agg_df, list(blank_to_twenty_config["col_names"]), blank_to_twenty_config["conversion_map"])
+    # agg_df = replace(agg_df, list(blank_to_one_config["col_names"]), blank_to_one_config["conversion_map"])
+    # agg_df = replace(agg_df, list(blank_to_twenty_config["col_names"]), blank_to_twenty_config["conversion_map"])
     
     # Handle imputation based on cross-column conditions
     for i, row in df.iterrows():
@@ -71,7 +80,7 @@ def impute(data_dir):
                         df.at[i, 'MADRS_TOT_PRO_RATED_baseline'] = np.sum(row[col_names])
                     	
     # Write output file
-    output_file_name = data_dir + "/" + 'canbind_imputed.csv'
+    output_file_name = os.path.join(out_dir_final_xy_data_matrices, "X_tillwk4_canbind.csv")
     df.to_csv(output_file_name, index=False)
     
 
