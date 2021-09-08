@@ -186,13 +186,13 @@ def aggregate_and_clean(root_dir, verbose=False, extra=False):
     # Eliminate invalid subjects in both X and y (those who don't make it to week 8)
     merged_df = get_valid_subjects(merged_df)
     merged_df = merged_df.drop(["RESPOND_WK8"], axis=1)
-    # Convert responder/nonresponder string to binary
-    ##merged_df = replace_target_col_values(merged_df, [TARGET_MAP])
+
     # Sort by pt ID
     merged_df = merged_df.sort_values(by=[COL_NAME_PATIENT_ID])
     merged_df = merged_df.reset_index(drop=True)
     
-    # Fix a value in the data that was messed up in a recent version (pt had age of 56, switched to 14 recently, so switched back)
+    # Fix a value in the data that was messed up in a recent version (pt had age of 56, switched to 14 recently,
+    # so switched back)
     if merged_df.at[68, 'AGE'] == 16:
         merged_df.at[68, 'AGE'] = 56
         print("Replaced misrecorded age")

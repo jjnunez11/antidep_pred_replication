@@ -167,11 +167,6 @@ def convert_canbind_to_overlapping(root_dir):
                    "EMPLOY_STATUS_3.0", "EMPLOY_STATUS_4.0"]:
         df = df.drop([todrop], axis=1)
 
-    # Filter out those without valid response/nonresponse values
-    ## Already filtered so ignore
-    ##df = get_valid_subjects(df)
-    ##df = df.drop(["RESPOND_WK8"], axis=1)
-
     # Rename Column Headers according to dict
     df = df.rename(HEADER_CONVERSION_DICT, axis=1)
 
