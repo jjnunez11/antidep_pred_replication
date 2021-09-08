@@ -19,7 +19,6 @@ See main() for description of arguments
 """
 from stard_preprocessing_globals import DIR_PROCESSED_DATA, DIR_SUBJECT_SELECTED, CSV_SUFFIX
 
-
 Q_DICT_S = dict(map(reversed, Q_DICT_C.items()))
 
 
@@ -111,7 +110,9 @@ def convert_stard_to_overlapping(root_data_dir_path, holdout_label):
     df = df.sort_index(axis=1)  # Newly added, sorts columns alphabetically so same for both matrices
     # df = df.sort_values(by=['SUBJLABEL:::subjectkey'])
     df = df.set_index(['SUBJLABEL:::subjectkey'])
-    df.to_csv(os.path.join(subject_selected_path, "X_tillwk4_overlap_qids_sr_" + holdout_label + CSV_SUFFIX), index=True)
+    df.to_csv(os.path.join(subject_selected_path, "X_tillwk4_overlap_qids_sr_" + holdout_label + CSV_SUFFIX),
+              index=True)
+
 
 def convert_canbind_to_overlapping(root_dir):
     data_dir = os.path.join(root_dir, "processed_data")
@@ -137,7 +138,7 @@ def convert_canbind_to_overlapping(root_dir):
 
     # Add new features as blank
     for new_feature in NEW_FEATURES_CANBIND:
-        df.loc[:, new_feature] = np.nan
+        df[new_feature] = np.nan
 
     # Then process them
     for case, config in CANBIND_OVERLAPPING_VALUE_CONVERSION_MAP.items():

@@ -36,8 +36,9 @@ The raw STAR*D and CAN-BIND data should be placed in separate folders within [da
 
 ## Running Machine Learning Analysis
 1. Update the path of your data and result directories in [run_globals](./code/run_globals.py)
-2. Place your .csv files with the X and y matrices you want to run (or ours as downloaded) into the data directory above
-3. Run the machine learning with [run_results](./code/run_results.py) script. This script calls [run_result](./code/run_results.py), assuming the filename of the 
+2. If using the preprocessing scripts above, the final data matrices will be saved within ./processed_data/final_xy_data_matrices/
+3. Place your .csv files with the X and y matrices you want to run (or ours as downloaded) into the data directory above
+4. Run the machine learning with [run_results](./code/run_results.py) script. This script calls [run_result](./code/run_results.py), assuming the filename of the 
 dataset csv's will be passed along, minus the '.csv' ending. 
 
 ### Code Versions
