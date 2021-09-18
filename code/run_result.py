@@ -121,8 +121,8 @@ def run_result(runs, evl, model, f_select, data_name, label_name, table=""):
     f.write("Feature selection: " + f_select + "\n")
     f.write("Train X is: " + train_data + "\n")
     f.write("Train y is: " + train_label + "\n")
-    f.write("Test X is: " + train_data + "\n")
-    f.write("Test y is: " + train_label + "\n")
+    f.write("Test X is: " + test_data + "\n")
+    f.write("Test y is: " + test_label + "\n")
     f.write(str(runs) + " runs of 10-fold CV\n\n")
 
     f.write("Summary of Results:------------------------------------\n")

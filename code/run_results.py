@@ -10,7 +10,7 @@ Adjust number of runs below
 """
 
 if __name__ == "__main__":
-    runs = 1
+    runs = 100
 
     # Table 3: Replication 
     if True:
