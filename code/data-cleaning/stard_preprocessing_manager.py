@@ -959,8 +959,9 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                     if subject_id in over21_df['subjectkey'].values:  # Only generate y if this subject stayed in
                         # study for 4 weeks
 
-                        # Grab the relevant entries between week 0 and week 8 in the study
-                        subset_wk8 = group[(group['version_form'] == version_form) & (group['days_baseline'] <= 77)]
+                        # Grab the relevant entries between week 0 and week 8 in the study, requiring Level 1
+                        subset_wk8 = group[(group['version_form'] == version_form) & (group['days_baseline'] <= 77)
+                                           & (group['level'] == "Level 1")]
                         # Drop blank/NaN entries
                         subset_wk8 = subset_wk8[subset_wk8['qstot'].notna()]
 
