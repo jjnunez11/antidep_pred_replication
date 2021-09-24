@@ -886,7 +886,7 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                 
                 i = 0
                 for subject_id, group in scale_df.groupby(['subjectkey']):
-                    if subject_id in over21_df['subjectkey'].values: # Only generate y if this subject stayed in
+                    if subject_id in over21_df['subjectkey'].values:  # Only generate y if this subject stayed in
                         # study for 4 weeks
 
                         # Generate TRD status. Based closely on a snippet provided by Qingqin Li. It does seem to vary
@@ -913,9 +913,6 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                             locf_lvl1_day = sorted_lvl1.iloc[0]['days_baseline']
                             # As week data is often missing, use greater than days_baseline 21 as a stand in for week 4
 
-                            if baseline_lvl1 < 6:
-                                ValueError('woh there was a baseline value less than 5!')
-
                             if locf_lvl1 <= 5 and locf_lvl1_day > 21 and baseline_lvl1 > 5:
                                 remission_lvl1 = 'YES'
                             elif locf_lvl1 >= 6 and locf_lvl1_day > 21 and baseline_lvl1 > 5:
@@ -932,9 +929,6 @@ def generate_y(root_data_dir_path, holdout_set_ids, holdout_label='all'):
                             lvl2_days_in = locf_lvl2_end_day - baseline_lvl2_start_day  # As week data is often
                             # missing, use difference in days_baseline instead, as over 21 days corresponds to 4 or
                             # more weeks according to the week data we do have
-
-                            if baseline_lvl2 < 6:
-                                ValueError('woh there was a baseline value less than 5! in Level 2!')
 
                             if locf_lvl2 <= 5 and baseline_lvl2 > 5:
                                 remission_lvl2 = 'YES'

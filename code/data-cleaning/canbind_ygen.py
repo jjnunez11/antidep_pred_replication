@@ -150,13 +150,21 @@ def y_gen(root_dir, debug=False):
     
     # Back up proceesed file before ygeneration
     if debug: merged_df.to_csv(out_dir + "/merged-data_processed_ygen.csv")
-    
-    # Replace missing "QIDS_RESP_WK8" values by manually checking criteria
+
+    # Require that baseline QIDS-SR be above 5 to keep in line with Nie et al
+    b_drop = len(merged_df)
+    merged_df = merged_df[merged_df["QIDS_OVERL_SEVTY_baseline"] > 5]
+    a_drop = len(merged_df)
+    print(f'{a_drop - b_drop} subjects dropped due to having a baseline QIDS-SR 5 or less')
+
+    # Generate targets, replace missing "QIDS_RESP_WK8" values by manually checking criteria
     for i, row in merged_df.iterrows():
         
         baseline_qids_sr = row['QIDS_OVERL_SEVTY_baseline']
         week4_qids_sr = row['QIDS_OVERL_SEVTY_week 4']
         week8_qids_sr = row['QIDS_OVERL_SEVTY_week 8']
+
+
 
         # Find LOCF, either week 8 or week 4
         if not(np.isnan(week8_qids_sr)):
@@ -186,10 +194,10 @@ def y_gen(root_dir, debug=False):
                 else:
                     assert merged_df.at[i, 'QIDS_RESP_WK8'] == 0, "Found an error when manually checking QIDS_RESP_WK8"
 
-    y_wk8_resp = merged_df[['SUBJLABEL','QIDS_RESP_WK8']]
+    y_wk8_resp = merged_df[['SUBJLABEL', 'QIDS_RESP_WK8']]
     y_wk8_resp.to_csv(out_dir_final_xy_data_matrices + "/y_wk8_resp_qids_sr_canbind.csv", index=False)
     
-    y_wk8_rem = merged_df[['SUBJLABEL','QIDS_REM_WK8']]
+    y_wk8_rem = merged_df[['SUBJLABEL', 'QIDS_REM_WK8']]
     y_wk8_rem.to_csv(out_dir_final_xy_data_matrices + "/y_wk8_rem_qids_sr_canbind.csv", index=False)
     
     # Save the version containing NaN values just for debugging, not otherwise used

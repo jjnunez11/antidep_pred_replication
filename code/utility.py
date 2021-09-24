@@ -80,6 +80,7 @@ def featureSelectionChi(X,y,n,k):
         k: Number of clusters
         n: Top n features
     """
+
     #Using the centroid of k-means clustering to represent a cluster of features
     kmeans = KMeans(n_clusters=k, random_state=0).fit(X.T)
     features = pairwise_distances_argmin(kmeans.cluster_centers_, X.T)

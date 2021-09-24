@@ -200,7 +200,11 @@ def aggregate_and_clean(root_dir, verbose=False, extra=False):
     # Drop the columns that are used for y
     merged_df = merged_df.drop(["QIDS_RESP_WK8_week 2"], axis=1)
     # Replace "week 2" with "week2" in column names
-    merged_df = merged_df.rename(columns=lambda x: re.sub('week 2','week2',x))
+    merged_df = merged_df.rename(columns=lambda x: re.sub('week 2', 'week2', x))
+
+    # Require that baseline QIDS-SR be above 5 to keep in line with Nie et al
+    merged_df = merged_df[merged_df["QIDS_OVERL_SEVTY_baseline"] > 5]
+
     # Write the data that has been cleaned and aggregated, contains blanks so needs imputation
     merged_df.to_csv(out_dir_clean_aggregated + "/canbind_clean_aggregated.csv", index=False)
 
