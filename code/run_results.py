@@ -13,7 +13,7 @@ if __name__ == "__main__":
     runs = 100
 
     # Table 3: Replication 
-    if True:
+    if False:
         table = 'table3_replication'
     
         X_matrix = "X_nolvl1drop_qids_c"  # STAR*D full feature data matrix, with subjects who do not drop in level
@@ -21,13 +21,13 @@ if __name__ == "__main__":
         y_labels = "y_nolvl1drop_trdrem_qids_c"  # STAR*D targets for QIDS-C TRD as defined by remission, for subjects
         # who do not drop in level 1 according to having QIDS-C scores
         
-        for model in ['rf', 'gbdt', "xgbt", "l2logreg"]:
+        for model in [ "l2logreg"]: # Add these back in 'rf', 'gbdt', "xgbt",
             for f_select in ["all", "chi", "elas"]: 
                 run_result(runs, "cv", model, f_select, X_matrix, y_labels, table)
         run_result(runs, "cv", 'elnet', 'all', X_matrix, y_labels, table)
     
     # Table 4: External Validation
-    if True:
+    if False:
         table = 'table4_externalvalidation'
     
         X_matrix = "X_tillwk4_overlap_qids_sr"  # STAR*D dataset, only overlapping features with CAN-BIND, subjects
@@ -46,7 +46,7 @@ if __name__ == "__main__":
             run_result(runs, "extval_rem", model, 'all', X_matrix, y_labels, table)
 
     # Table 5: Comparisons
-    if True:
+    if False:
         table = 'table5_comparisons'
         # Results in order they appear in table
         
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         run_result(runs, "extval_resp", 'rf', 'all', 'X_tillwk4_overlap_qids_sr', 'y_wk8_resp_qids_sr', table)
 
     # Temp runs
-    # run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', 'quick')
-    # run_result(runs, "cv", 'rf', 'all', 'X_tillwk4_qids_sr', 'y_wk8_rem_qids_sr', 'quick')
+    # run_result(runs, "cv", 'rf', 'chi', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', 'table5_comparisons')
+
 
     print("Ran all successfully!")
