@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5f792933-6650-4a4a-bd90-aa2ae92261a0" name="Default Changelist" comment="Put in requirements for remission/response that we're only looking at Level 1 to exclude those who go to Level 2 early">
+    <list default="true" id="5f792933-6650-4a4a-bd90-aa2ae92261a0" name="Default Changelist" comment="Updating results for the z-score and other table generation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/run_globals.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/run_globals.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/run_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/run_results.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/table-preperation/result_dicts.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/table-preperation/result_dicts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -189,7 +187,7 @@
       <workItem from="1632247457559" duration="3970000" />
       <workItem from="1632435955205" duration="17103000" />
       <workItem from="1632687138168" duration="11847000" />
-      <workItem from="1633371367404" duration="17716000" />
+      <workItem from="1633371367404" duration="20873000" />
     </task>
     <task id="LOCAL-00001" summary="Post publishing, trying some modifications">
       <created>1629999352258</created>
@@ -401,7 +399,14 @@
       <option name="project" value="LOCAL" />
       <updated>1632451331460</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Updating results for the z-score and other table generation">
+      <created>1633648096331</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1633648096331</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TodoView">
@@ -441,7 +446,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fixing issue with holdouts, start of fix" />
     <MESSAGE value="Finalzing holdout fix, check after this" />
     <MESSAGE value="still fixing, getting weird bug" />
     <MESSAGE value="fixed bug, was mode sometimes resulting in more than one number" />
@@ -466,7 +470,8 @@
     <MESSAGE value="Code for running, and fixed a silly error in printing out used datasets" />
     <MESSAGE value="Put in dropping canbind subjects if already qids remission at baseline" />
     <MESSAGE value="Put in requirements for remission/response that we're only looking at Level 1 to exclude those who go to Level 2 early" />
-    <option name="LAST_COMMIT_MESSAGE" value="Put in requirements for remission/response that we're only looking at Level 1 to exclude those who go to Level 2 early" />
+    <MESSAGE value="Updating results for the z-score and other table generation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updating results for the z-score and other table generation" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/antidep_pred_replication$run_results.coverage" NAME="run_results Coverage Results" MODIFIED="1633497350351" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
