@@ -73,7 +73,7 @@ if __name__ == "__main__":
         run_result(runs, "extval_resp", 'rf', 'all', 'X_tillwk4_overlap_qids_sr', 'y_wk8_resp_qids_sr', table)
 
     # Temp runs
-    # run_result(runs, "cv", 'rf', 'chi', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', 'table5_comparisons')
+    run_result(runs, "cv", 'rf', 'chi', 'X_tillwk4_qids_sr', 'y_wk8_resp_qids_sr', 'table5_comparisons')
 
 
     print("Ran all successfully!")
