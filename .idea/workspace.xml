@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5f792933-6650-4a4a-bd90-aa2ae92261a0" name="Default Changelist" comment="updated all results except chi2 due to memory crashing error, will try again">
+    <list default="true" id="5f792933-6650-4a4a-bd90-aa2ae92261a0" name="Default Changelist" comment="Added all of the new results and re ran the zscore calculations">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/run_results.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/run_results.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/table-preperation/result_dicts.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/table-preperation/result_dicts.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -210,7 +208,10 @@
       <workItem from="1632247457559" duration="3970000" />
       <workItem from="1632435955205" duration="17103000" />
       <workItem from="1632687138168" duration="11847000" />
-      <workItem from="1633371367404" duration="27453000" />
+      <workItem from="1633371367404" duration="27589000" />
+      <workItem from="1634077663028" duration="3468000" />
+      <workItem from="1634234540026" duration="1586000" />
+      <workItem from="1634248266461" duration="637000" />
     </task>
     <task id="LOCAL-00001" summary="Post publishing, trying some modifications">
       <created>1629999352258</created>
@@ -436,7 +437,14 @@
       <option name="project" value="LOCAL" />
       <updated>1633652500118</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Added all of the new results and re ran the zscore calculations">
+      <created>1633725144499</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1633725144499</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TodoView">
@@ -476,7 +484,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="still fixing, getting weird bug" />
     <MESSAGE value="fixed bug, was mode sometimes resulting in more than one number" />
     <MESSAGE value="fixing more bugs like onehot colummns missing" />
     <MESSAGE value="Found bug, will need to change how the filtering works annoyingly" />
@@ -501,11 +508,12 @@
     <MESSAGE value="Put in requirements for remission/response that we're only looking at Level 1 to exclude those who go to Level 2 early" />
     <MESSAGE value="Updating results for the z-score and other table generation" />
     <MESSAGE value="updated all results except chi2 due to memory crashing error, will try again" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated all results except chi2 due to memory crashing error, will try again" />
+    <MESSAGE value="Added all of the new results and re ran the zscore calculations" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added all of the new results and re ran the zscore calculations" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/antidep_pred_replication$run_results.coverage" NAME="run_results Coverage Results" MODIFIED="1633653385407" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
-    <SUITE FILE_PATH="coverage/antidep_pred_replication$z_scores.coverage" NAME="z_scores Coverage Results" MODIFIED="1633724768677" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/table-preperation" />
+    <SUITE FILE_PATH="coverage/antidep_pred_replication$z_scores.coverage" NAME="z_scores Coverage Results" MODIFIED="1634234781393" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/table-preperation" />
     <SUITE FILE_PATH="coverage/antidep_pred_replication$canbind_preprocessor.coverage" NAME="canbind_preprocessor Coverage Results" MODIFIED="1630609600020" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/data-cleaning" />
   </component>
 </project>
