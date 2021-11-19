@@ -1,5 +1,6 @@
 # Replication of Machine Learning Methods to Predict Treatment Outcome with Antidepressant Medications in Patients with Major Depressive Disorder from STAR*D and CAN-BIND-1
 ## Accepted for publication in PLOS One May 27, 2021
+## Correction submitted November 13, 2021
 
 README by John-Jose Nunez, jjnunez11@gmail.com
 
@@ -48,3 +49,7 @@ scikit-learn 0.23.1
 pandas 1.0.5
 numpy 1.17.0
 scipy 1.5.0
+
+### Correction
+
+After publication, some bugs were found in our code. These have been corrected and merged to Master. As well, in this directory there is a corrected version of our manuscript, to see changes via Track Changes. The general results and understanding of our paper did not change, most results decreased by a small amount after fixing the bugs. 
