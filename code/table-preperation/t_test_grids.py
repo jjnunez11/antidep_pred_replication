@@ -35,10 +35,9 @@ def write_t_test_grid(output_dir, baccs, aucs):
     f.close()
 
 
-table3_path = r'C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\Paper Submission\DataForFigures\Table3_Replication/'
-table4_path = r'C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\Paper Submission\DataForFigures\Table4_ExternalValidation/'
-table5_path = r'C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\Paper Submission\DataForFigures\Table5_Comparing/'
-
+table3_path = r'C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\post_publish\to_submit_correction\Supplementary\Data_For_Figures\Table3_Replication/'
+table4_path = r'C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\post_publish\to_submit_correction\Supplementary\Data_For_Figures\Table4_ExternalValidation/'
+table5_path = r'C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\post_publish\to_submit_correction\Supplementary\Data_For_Figures\Table5_Comparing/'
 
 
 write_t_test_grid(table3_path, TABLE3_BACCS, TABLE3_AUCS)
