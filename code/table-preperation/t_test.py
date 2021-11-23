@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Script to run t-tests on some of our results
+Script to run t-tests on some of our previous results
 
 Created on Wed Feb  5 11:04:04 2020
 

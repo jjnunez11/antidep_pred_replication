@@ -31,7 +31,7 @@ We may update the NDA collection with them when possible.
 
 The exact models objects used to obtain our results, compressed via Python's pickle protocol, are obtain in this [OneDrive folder](https://onedrive.live.com/embed?cid=3270DE108C079AD9&resid=3270DE108C079AD9%2113381&authkey=AGH3p3NQb5bCa9w) due to space constraints of Github. 
 
-The non-corrected results initially used in our paper are located within zips for each table in the [results folder](./results)
+The non-corrected results initially used in our paper are located within zips for each table in the [previous results folder](./previous results)
 
 ## Data Processing
 

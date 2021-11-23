@@ -41,7 +41,7 @@ def run_result(runs, evl, model, f_select, data_name, label_name, table=""):
             test_label = os.path.join(DATA_DIR,
                                       'y_wk8_rem_qids_sr_canbind.csv')  # y matrix from canbind, with subjects as
             # above, targeting week 8 qids sr remission
-        elif evl == "extval_rem_randomized":  # A control to make sure our extval_rem results are robust, with the
+        elif evl == "extval_rem_randomized":  # A control to make sure our extval_rem previous results are robust, with the
             # targets scrambled randomly
             test_label = os.path.join(DATA_DIR,
                                       'y_wk8_randomized_qids_sr_canbind.csv')  # y matrix from canbind, with subjects
@@ -55,7 +55,7 @@ def run_result(runs, evl, model, f_select, data_name, label_name, table=""):
     ensemble_n = 30
     n_splits = 10
 
-    # Create numpy arrays to store all the results
+    # Create numpy arrays to store all the previous results
     accus = np.zeros(runs)
     bal_accus = np.zeros(runs)
     aucs = np.zeros(runs)
@@ -173,7 +173,7 @@ def run_result(runs, evl, model, f_select, data_name, label_name, table=""):
         _, specs_pvalue = ttest_1samp(specs, 0.71)
         f.write("P-value from one sided t-test vs Nie et al's 0.71 Specificity: {:.6f}\n\n".format(auc_pvalue))
 
-    f.write("Raw results:----------------------------------------\n")
+    f.write("Raw previous results:----------------------------------------\n")
     f.write("Accuracies\n")
     f.write(re.sub(r"\s+", r",", str(accus)) + "\n")
     f.write("Balanced Accuracies\n")

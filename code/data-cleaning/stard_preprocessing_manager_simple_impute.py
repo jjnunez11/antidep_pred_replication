@@ -12,7 +12,7 @@ import warnings
 
 """ 
 As in the original and imported function stard_preprocessing_manager, this will take in multiple text files (representing psychiatric scales) and output multiple CSV files, at least for each scale read in.
-However, this function does a "simple imputation", where all blanks are en masse replaced with median. Not used for the paper results. 
+However, this function does a "simple imputation", where all blanks are en masse replaced with median. Not used for the paper previous results. 
 """
 LINE_BREAK = "*************************************************************"
 

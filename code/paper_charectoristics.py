@@ -275,7 +275,7 @@ if __name__ == "__main__":
         
     if len(sys.argv) == 1:
         data_dir = "./final_datasets/to_run_20201016/"
-        results_dir = "./final_datasets/results/"
+        results_dir = "./final_datasets/previous results/"
         write_overlapping_characteristics(data_dir, results_dir)
         write_top_features(data_dir, results_dir)
         z_tests(results_dir)

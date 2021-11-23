@@ -3,7 +3,7 @@
 """
 Created on Sat Oct  3 15:34:54 2020
 
-Stores dicts with the results, for other functions which produce tables and the like
+Stores dicts with the previous results, for other functions which produce tables and the like
 
 @author: jjnun
 """

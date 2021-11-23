@@ -33,7 +33,7 @@ grid = GridSearchCV(estimator=model, n_jobs=6, scoring='balanced_accuracy', para
     'power_t':[0.005,0.08, 0.09,0.01,0.011, 0.012]})
 grid.fit(X,y)
 print(grid)
-# summarize the results of the grid search
+# summarize the previous results of the grid search
 print(f' The best balanced accuracy: {grid.best_score_}')
 print(f'The best l1_ratio {grid.best_estimator_.l1_ratio}')
 print(f'The best max_iter {grid.best_estimator_.max_iter}')
@@ -51,7 +51,7 @@ grid = GridSearchCV(estimator=model, n_jobs=6, scoring='balanced_accuracy', para
 
 grid.fit(X,y)
 print(grid)
-# summarize the results of the grid search
+# summarize the previous results of the grid search
 print(f'The best balanced accuracy: {grid.best_score_:.4f}')
 print(f'The best max_iter {grid.best_estimator_.max_iter}')
 print(f'The best tol {grid.best_estimator_.tol}')
@@ -71,7 +71,7 @@ grid = GridSearchCV(xgb_model, n_jobs=1,
                        'silent': [1],
                        'subsample': [0.5],
                        'colsample_bytree': [0.8],
-                       'n_estimators': [500], #number of trees, change it to 1000 for better results
+                       'n_estimators': [500], #number of trees, change it to 1000 for better previous results
                        'missing':[-999],
                        'seed': [1337],
                        'reg_lambda':[6,7,8,9,10,11,12,13,14,15],
@@ -82,7 +82,7 @@ grid = GridSearchCV(xgb_model, n_jobs=1,
 
 grid.fit(X,y)
 print(grid)
-# summarize the results of the grid search
+# summarize the previous results of the grid search
 print(f'The best balanced accuracy: {grid.best_score_:.4f} trying to be 0.70')
 print(f'The best learning_rate {grid.best_estimator_.learning_rate}')
 print(f'The best max_depth {grid.best_estimator_.max_depth}')

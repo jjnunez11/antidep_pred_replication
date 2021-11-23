@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Scripts to generate the z-score tables which compare results within a table
+Scripts to generate the z-score tables which compare previous results within a table
 and vs the reported performance of Nie et al
 
 Created on Fri Sep 18 10:14:57 2020

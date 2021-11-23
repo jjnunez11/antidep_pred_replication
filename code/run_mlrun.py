@@ -67,8 +67,8 @@ def RunMLRun(train_data, train_label, test_data, test_label, f_select, model, en
         X_train, _ = X[train_index], X[val_index]
         y_train, _ = y[train_index], y[val_index]
 
-        # If you want training cross-validation results, use this, and then seperate below so you're holding both
-        # holdout set results and cv results
+        # If you want training cross-validation previous results, use this, and then seperate below so you're holding both
+        # holdout set previous results and cv previous results
         # if evl == 'cv': X_train, X_test = X[train_index], X[test_index]
         # y_train, y_test = y[train_index], y[test_index] elif evl == 'extval_resp' or evl == 'extval_rem' or 'extval_rem_randomized':
         # X_train, _ = X[train_index], X[test_index] y_train, _ = y[train_index], y[test_index]

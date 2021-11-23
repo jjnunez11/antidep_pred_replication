@@ -1,9 +1,9 @@
 from run_result import run_result
 
 """
-Top level script to produce results from our paper
+Top level script to produce previous results from our paper
 
-Does not take arguments. Adjust data and results directory in 
+Does not take arguments. Adjust data and previous results directory in 
 run_globals.py
 
 Adjust number of runs below
