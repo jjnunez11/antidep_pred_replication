@@ -1,10 +1,19 @@
 # Replication of Machine Learning Methods to Predict Treatment Outcome with Antidepressant Medications in Patients with Major Depressive Disorder from STAR*D and CAN-BIND-1
 ## Accepted for publication in PLOS One May 27, 2021
-## Correction submitted November 13, 2021
+## Correction submitted November 21, 2021
 
 README by John-Jose Nunez, jjnunez11@gmail.com
 
 Thank you for your interest in our project! Our aim is to make it as reproducible as possible, please do not hesitate to reach out. 
+
+## Correction
+On behalf of the authors, we would like to let readers know that some minor bugs were found in our computer code after publication. 
+These have not changed the general understanding of our paper, but have affected most of the reported results, generally decreasing our results by a small amount. 
+We have contacted the journal regarding this error and its correction. All authors have approved these corrections.
+
+Please see the [correction folder](./correction) for our corrected manuscript, corrected results, corrected supplementary results, and a description of the correction.
+
+The code in this github repository has been corrected to address these bugs. 
 
 ## Data Availability
 The raw clinical data from STAR*D is found [in our NIMH NDA project collection](http://dx.doi.org/10.15154/1503299)
@@ -18,11 +27,11 @@ The processed STAR*D datasets used directly for machine learning are obtainable 
 and is named [Processed STARD Datasets used for ML](https://nda.nih.gov/study.html?tab=result&id=640)
 
 The processed CAN-BIND datasets used directly for machine learning are obtainable through [Brian-CODE](https://braininstitute.ca/research-data-sharing/brain-code).
-We may update the NDA collection with them when possible. 
-
-The results used in our paper are located within zips for each table in the [results folder](./results)
+We may update the NDA collection with them when possible.
 
 The exact models objects used to obtain our results, compressed via Python's pickle protocol, are obtain in this [OneDrive folder](https://onedrive.live.com/embed?cid=3270DE108C079AD9&resid=3270DE108C079AD9%2113381&authkey=AGH3p3NQb5bCa9w) due to space constraints of Github. 
+
+The non-corrected results initially used in our paper are located within zips for each table in the [results folder](./results)
 
 ## Data Processing
 

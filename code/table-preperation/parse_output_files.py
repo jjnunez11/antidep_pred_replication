@@ -13,9 +13,9 @@ import re
 ##output_dir = r'C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\Paper Submission\DataForFigures\Table3_Replication/'
 ##output_dir = r'C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\Paper Submission\DataForFigures\Table4_ExternalValidation/'
 ##output_dir = r'C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\Paper Submission\DataForFigures\Table5_Comparing/'
-##output_dir = r'F:\F_Drive_Backup\ml_paper_models\post_publish_final\table3_replication'
+output_dir = r'F:\F_Drive_Backup\ml_paper_models\post_publish_final\table3_replication'
 ##output_dir = r'F:\F_Drive_Backup\ml_paper_models\post_publish_final\table4_externalvalidation'
-output_dir = r'F:\F_Drive_Backup\ml_paper_models\post_publish_final\table5_comparisons'
+##output_dir = r'F:\F_Drive_Backup\ml_paper_models\post_publish_final\table5_comparisons'
 
 mean_re = re.compile('is: 0\.\d{1,4}')
 mean_re = re.compile('a')

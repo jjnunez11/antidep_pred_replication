@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5f792933-6650-4a4a-bd90-aa2ae92261a0" name="Default Changelist" comment="Added all of the new results and re ran the zscore calculations">
+    <list default="true" id="5f792933-6650-4a4a-bd90-aa2ae92261a0" name="Default Changelist" comment="Tweaked slight bug in table preparation code">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/JJ Nunez, Corrected manuscript with track changes.docx" beforeDir="false" afterPath="$PROJECT_DIR$/correction/JJ Nunez, Corrected manuscript with track changes.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/table-preperation/parse_output_files.py" beforeDir="false" afterPath="$PROJECT_DIR$/code/table-preperation/parse_output_files.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,7 +67,12 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="duplicates.index" />
   </component>
-  <component name="RunManager" selected="Python.z_scores">
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\jjnun\Documents\Sync\Research\1_CANBIND_Replication\antidep_pred_replication\correction" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.parse_output_files">
     <configuration name="Debugger" type="PythonConfigurationType" factoryName="Python">
       <module name="cspc532m-project" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -109,20 +117,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="run_replication" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="parse_output_files" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="cspc532m-project" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\jjnun\Anaconda3\python.exe" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/code" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/code/table-preperation" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/code/run_replication.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/code/table-preperation/parse_output_files.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -145,6 +153,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/code/run_results.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="t_test_grids" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="cspc532m-project" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/code/table-preperation" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/code/table-preperation/t_test_grids.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -177,11 +207,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.parse_output_files" />
+        <item itemvalue="Python.t_test_grids" />
         <item itemvalue="Python.z_scores" />
         <item itemvalue="Python.run_results" />
         <item itemvalue="Python.canbind_preprocessor" />
-        <item itemvalue="Python.run_replication" />
-        <item itemvalue="Python.run_results" />
       </list>
     </recent_temporary>
   </component>
@@ -212,6 +242,14 @@
       <workItem from="1634077663028" duration="3468000" />
       <workItem from="1634234540026" duration="1586000" />
       <workItem from="1634248266461" duration="637000" />
+      <workItem from="1634835362257" duration="79000" />
+      <workItem from="1637173348633" duration="80000" />
+      <workItem from="1637174173625" duration="31000" />
+      <workItem from="1637174393201" duration="72000" />
+      <workItem from="1637278448154" duration="2449000" />
+      <workItem from="1637283179748" duration="33000" />
+      <workItem from="1637283374421" duration="844000" />
+      <workItem from="1637688351268" duration="550000" />
     </task>
     <task id="LOCAL-00001" summary="Post publishing, trying some modifications">
       <created>1629999352258</created>
@@ -444,7 +482,21 @@
       <option name="project" value="LOCAL" />
       <updated>1633725144499</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Merged post publication correction to master">
+      <created>1634249567041</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1634249567041</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Tweaked slight bug in table preparation code">
+      <created>1637282947644</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1637282947644</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TodoView">
@@ -484,8 +536,6 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fixed bug, was mode sometimes resulting in more than one number" />
-    <MESSAGE value="fixing more bugs like onehot colummns missing" />
     <MESSAGE value="Found bug, will need to change how the filtering works annoyingly" />
     <MESSAGE value="Changing filtering till after the raw reads, so that we don't drop columns we don't mean to" />
     <MESSAGE value="Bugs fixed, seems to be good besides some slight differences likely due to different imputation" />
@@ -509,11 +559,15 @@
     <MESSAGE value="Updating results for the z-score and other table generation" />
     <MESSAGE value="updated all results except chi2 due to memory crashing error, will try again" />
     <MESSAGE value="Added all of the new results and re ran the zscore calculations" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added all of the new results and re ran the zscore calculations" />
+    <MESSAGE value="Merged post publication correction to master" />
+    <MESSAGE value="Tweaked slight bug in table preparation code" />
+    <option name="LAST_COMMIT_MESSAGE" value="Tweaked slight bug in table preparation code" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/antidep_pred_replication$t_test_grids.coverage" NAME="t_test_grids Coverage Results" MODIFIED="1637278879849" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/table-preperation" />
     <SUITE FILE_PATH="coverage/antidep_pred_replication$run_results.coverage" NAME="run_results Coverage Results" MODIFIED="1633653385407" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code" />
     <SUITE FILE_PATH="coverage/antidep_pred_replication$z_scores.coverage" NAME="z_scores Coverage Results" MODIFIED="1634234781393" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/table-preperation" />
     <SUITE FILE_PATH="coverage/antidep_pred_replication$canbind_preprocessor.coverage" NAME="canbind_preprocessor Coverage Results" MODIFIED="1630609600020" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/data-cleaning" />
+    <SUITE FILE_PATH="coverage/antidep_pred_replication$parse_output_files.coverage" NAME="parse_output_files Coverage Results" MODIFIED="1637283392933" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/code/table-preperation" />
   </component>
 </project>
