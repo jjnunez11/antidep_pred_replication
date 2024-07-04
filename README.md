@@ -2,7 +2,7 @@
 ## Accepted for publication in PLOS One May 27, 2021
 ## Correction submitted November 21, 2021
 
-README by John-Jose Nunez, jjnunez11@gmail.com
+README by John-Jose Nunez, john-jose.nunez@ubc.ca
 
 Thank you for your interest in our project! Our aim is to make it as reproducible as possible, please do not hesitate to reach out. 
 
